@@ -1,7 +1,7 @@
 # Architecture-Description-Language-for-Configurable-CPU-Simulation
 
 
-##Grader and Instructor
+## Grader and Instructor
 
 | Name                  | Role          | Username   | 
 | -------------         | ------------- |------------|
