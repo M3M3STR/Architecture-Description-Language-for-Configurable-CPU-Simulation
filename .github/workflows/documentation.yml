@@ -1,0 +1,58 @@
+# found this from
+# https://github.com/marketplace/actions/doxygen-and-github-pages
+
+name: Doxygen Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # Get repository source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install Doxygen and Graphviz
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      # Generate documentation
+      - name: Generate Doxygen documentation
+        run: doxygen Doxyfile
+
+      # Configure GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Upload generated HTML
+      - name: Upload documentation
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs-output/html
+
+      # Deploy to GitHub Pages
+      - name: Deploy documentation
+        id: deployment
+        uses: actions/deploy-pages@v4
