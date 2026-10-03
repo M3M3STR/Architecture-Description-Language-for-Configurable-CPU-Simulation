@@ -70,6 +70,7 @@ find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
+        src/UI/Application.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
