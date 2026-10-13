@@ -10,13 +10,13 @@ operand_list : operand (COMMA operand)* ;
 
 operand : REG | NUM ;
 
-comment : HASH_TEXT ;
+comment : HASH ;
 
 REG      : 'r' [0-9]+ ;
 NUM      : [0-9]+ ;
 ID       : [a-zA-Z_] [a-zA-Z_0-9]* ;
 COMMA    : ',' ;
-HASH_TEXT: '#' ~[\r\n]* ;
+HASH: '#' ~[\r\n]* ;
 
 NEWLINE  : [\r\n]+ ;
 WS       : [ \t]+ -> skip ;
