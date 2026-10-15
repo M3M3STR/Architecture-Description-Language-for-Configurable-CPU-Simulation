@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "SDL3/SDL_dialog.h"
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl3.h"
@@ -19,13 +18,7 @@
 #include <GL/gl.h>
 #endif
 
-
-ImGuiWindowFlags flags = ImGuiWindowFlags_MenuBar| 
-                         ImGuiWindowFlags_NoTitleBar|
-                         ImGuiWindowFlags_AlwaysAutoResize;
-
-
-Application::Application() = default;
+Application::Application(): screenManager(context){}
 
 
 Application::~Application()
@@ -182,7 +175,9 @@ bool Application::initialize()
         return false;
     }
 
-    imguiInitialized = true;
+    imguiContextCreated = true;
+    imguiSDLInitialized = true;
+    imguiOpenGLInitialized = true;
     running = true;
 
     return true;
@@ -211,37 +206,15 @@ void Application::processEvents()
         }
     }
 }
-void SDLCALL fileDialogCallback(
-    void* userdata,
-    const char* const* filelist,
-    int filter
-)
-{
-    if (filelist == nullptr) {
-        std::cerr << "File dialog error: "
-                  << SDL_GetError() << '\n';
-        return;
-    }
 
-    // Empty list = user clicked Cancel
-    if (filelist[0] == nullptr) {
-        std::cout << "File selection cancelled.\n";
-        return;
-    }
-
-    std::cout << "Selected file: "
-              << filelist[0]
-              << '\n';
-}
 
 int Application::run()
 {
     if (!initialize()) {
         return 1;
     }
-    const SDL_DialogFileFilter filters[] = {
-      { "ADL Files", "adl" }
-    };
+
+    screenManager.initialize();
 
     // ==================================================
     // MAIN APPLICATION LOOP
@@ -255,6 +228,11 @@ int Application::run()
 
         processEvents();
 
+        if (!running) {
+            break;
+        }
+
+        screenManager.update();
 
         // ----------------------------------------------
         // Begin ImGui frame
@@ -269,40 +247,7 @@ int Application::run()
         // UI
         // ==============================================
  
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-       
-        ImGui::Begin("Setup_window",nullptr,flags);
-
-        if (ImGui::Button("Upload File")) {
-            std::cout << "Button clicked!\n";
-        
-          SDL_ShowOpenFileDialog(
-            fileDialogCallback,   // called when user finishes
-            nullptr,              // userdata
-            window,               // parent window
-            filters,              // file filters
-            1,                    // number of filters
-            nullptr,              // default location
-            false                 // allow multiple files?
-          );
-
-        }
-
-
-        if(ImGui::Button("Write Program")){
-          std::cout << "Button for program clicked\n";
-        }
-
-
-
-        ImGui::End();
-
-
-        // ----------------------------------------------
-        // Finish ImGui frame
-        // ----------------------------------------------
+        screenManager.draw();
 
         ImGui::Render();
 
@@ -351,6 +296,8 @@ int Application::run()
         // ----------------------------------------------
 
         SDL_GL_SwapWindow(window);
+
+        screenManager.applyPendingTransition();
     }
 
 
@@ -367,17 +314,30 @@ void Application::cleanup()
     // ImGui
     // --------------------------------------------------
 
-    if (imguiInitialized) {
+    // if (imguiInitialized) {
+    //
+    //     ImGui_ImplOpenGL3_Shutdown();
+    //     ImGui_ImplSDL3_Shutdown();
+    //
+    //     ImGui::DestroyContext();
+    //
+    //     imguiInitialized = false;
+    // }
 
+    if (imguiOpenGLInitialized) {
         ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplSDL3_Shutdown();
-
-        ImGui::DestroyContext();
-
-        imguiInitialized = false;
+        imguiOpenGLInitialized = false;
     }
 
+    if (imguiSDLInitialized) {
+        ImGui_ImplSDL3_Shutdown();
+        imguiSDLInitialized = false;
+    }
 
+    if (imguiContextCreated) {
+        ImGui::DestroyContext();
+        imguiContextCreated = false;
+    }
     // --------------------------------------------------
     // OpenGL
     // --------------------------------------------------

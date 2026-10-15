@@ -6,7 +6,7 @@ project(ADL
         LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -71,6 +71,10 @@ find_package(OpenGL REQUIRED)
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/UI/Application.cpp
+        src/UI/ScreenManager.cpp
+        src/UI/Screens/StartScreen.cpp
+        src/UI/Screens/LoadingScreen.cpp
+        src/UI/Screens/SimulatorScreen.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
