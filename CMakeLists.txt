@@ -31,8 +31,8 @@ endif()
 include(FetchContent)
 
 # Disable ANTLR's own tests so GoogleTest isn't fetched.
-#set(ANTLR_BUILD_CPP_TESTS OFF CACHE BOOL
- #   "Disable ANTLR C++ runtime tests" FORCE)
+set(ANTLR_BUILD_CPP_TESTS OFF CACHE BOOL
+   "Disable ANTLR C++ runtime tests" FORCE)
 
 # Build only the static runtime.
 #set(ANTLR_BUILD_SHARED OFF CACHE BOOL
@@ -114,6 +114,54 @@ add_custom_command(
 )
 
 # --------------------------------------------------
+# Generate C++ files from the ASM grammar
+# --------------------------------------------------
+
+set(ASM_GRAMMAR
+    "${PROJECT_SOURCE_DIR}/grammar/ASM.g4"
+)
+
+set(ASM_GENERATED_SOURCES
+    "${ADL_GENERATED_DIR}/ASMLexer.cpp"
+    "${ADL_GENERATED_DIR}/ASMParser.cpp"
+    "${ADL_GENERATED_DIR}/ASMBaseVisitor.cpp"
+    "${ADL_GENERATED_DIR}/ASMVisitor.cpp"
+)
+
+set(ASM_GENERATED_HEADERS
+    "${ADL_GENERATED_DIR}/ASMLexer.h"
+    "${ADL_GENERATED_DIR}/ASMParser.h"
+    "${ADL_GENERATED_DIR}/ASMBaseVisitor.h"
+    "${ADL_GENERATED_DIR}/ASMVisitor.h"
+)
+
+add_custom_command(
+    OUTPUT
+        ${ASM_GENERATED_SOURCES}
+        ${ASM_GENERATED_HEADERS}
+
+    COMMAND
+        "${CMAKE_COMMAND}" -E make_directory
+        "${ADL_GENERATED_DIR}"
+
+    COMMAND
+        "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR_JAR}"
+        -Dlanguage=Cpp
+        -no-listener
+        -visitor
+        -Xexact-output-dir
+        -o "${ADL_GENERATED_DIR}"
+        "${ASM_GRAMMAR}"
+
+    DEPENDS
+        "${ASM_GRAMMAR}"
+        "${ANTLR_JAR}"
+
+    COMMENT "Generating C++ parser from ASM.g4"
+    VERBATIM
+)
+
+# --------------------------------------------------
 # Application
 # --------------------------------------------------
 
@@ -133,5 +181,24 @@ target_link_libraries(cpu_simulator PRIVATE
 )
 
 target_compile_definitions(cpu_simulator PRIVATE
+    ANTLR4CPP_STATIC
+)
+
+add_executable(asm_parser
+    src/asm_main.cpp
+    ${ASM_GENERATED_SOURCES}
+    ${ASM_GENERATED_HEADERS}
+)
+
+target_include_directories(asm_parser PRIVATE
+    "${PROJECT_SOURCE_DIR}/include"
+    "${ADL_GENERATED_DIR}"
+)
+
+target_link_libraries(asm_parser PRIVATE
+    antlr4_static
+)
+
+target_compile_definitions(asm_parser PRIVATE
     ANTLR4CPP_STATIC
 )
