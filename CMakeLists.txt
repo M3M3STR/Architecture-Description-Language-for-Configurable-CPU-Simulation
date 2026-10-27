@@ -10,6 +10,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_executable(cpu_simulator
+        src/main.cpp
+)
+
+target_include_directories(cpu_simulator
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
 # --------------------------------------------------
@@ -194,4 +204,3 @@ target_link_libraries(parser_assembler_tester PRIVATE
 target_compile_definitions(parser_assembler_tester PRIVATE
     ANTLR4CPP_STATIC
 )
-

@@ -68,3 +68,8 @@ Desktop.ini
 *.tmp
 *.swp
 *~
+
+# ===============================
+# Doxygen generated documentation
+# ===============================
+docs-output/
