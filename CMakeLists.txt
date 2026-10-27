@@ -70,7 +70,7 @@ set(ADL_GRAMMAR
 )
 
 set(ADL_GENERATED_DIR
-    "${PROJECT_BINARY_DIR}/generated"
+    "${PROJECT_BINARY_DIR}/generated/ADL"
 )
 
 set(ADL_GENERATED_SOURCES
@@ -121,18 +121,22 @@ set(ASM_GRAMMAR
     "${PROJECT_SOURCE_DIR}/grammar/ASM.g4"
 )
 
+set(ASM_GENERATED_DIR
+    "${PROJECT_BINARY_DIR}/generated/ASM"
+)
+
 set(ASM_GENERATED_SOURCES
-    "${ADL_GENERATED_DIR}/ASMLexer.cpp"
-    "${ADL_GENERATED_DIR}/ASMParser.cpp"
-    "${ADL_GENERATED_DIR}/ASMBaseVisitor.cpp"
-    "${ADL_GENERATED_DIR}/ASMVisitor.cpp"
+    "${ASM_GENERATED_DIR}/ASMLexer.cpp"
+    "${ASM_GENERATED_DIR}/ASMParser.cpp"
+    "${ASM_GENERATED_DIR}/ASMBaseVisitor.cpp"
+    "${ASM_GENERATED_DIR}/ASMVisitor.cpp"
 )
 
 set(ASM_GENERATED_HEADERS
-    "${ADL_GENERATED_DIR}/ASMLexer.h"
-    "${ADL_GENERATED_DIR}/ASMParser.h"
-    "${ADL_GENERATED_DIR}/ASMBaseVisitor.h"
-    "${ADL_GENERATED_DIR}/ASMVisitor.h"
+    "${ASM_GENERATED_DIR}/ASMLexer.h"
+    "${ASM_GENERATED_DIR}/ASMParser.h"
+    "${ASM_GENERATED_DIR}/ASMBaseVisitor.h"
+    "${ASM_GENERATED_DIR}/ASMVisitor.h"
 )
 
 add_custom_command(
@@ -142,7 +146,7 @@ add_custom_command(
 
     COMMAND
         "${CMAKE_COMMAND}" -E make_directory
-        "${ADL_GENERATED_DIR}"
+        "${ASM_GENERATED_DIR}"
 
     COMMAND
         "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR_JAR}"
@@ -150,7 +154,7 @@ add_custom_command(
         -no-listener
         -visitor
         -Xexact-output-dir
-        -o "${ADL_GENERATED_DIR}"
+        -o "${ASM_GENERATED_DIR}"
         "${ASM_GRAMMAR}"
 
     DEPENDS
@@ -165,40 +169,29 @@ add_custom_command(
 # Application
 # --------------------------------------------------
 
-add_executable(cpu_simulator
-    src/main.cpp
+add_executable(parser_assembler_tester
+    tests/parser_assembler_testbench.cpp
+    src/ADL/parser_ADL.cpp
+    src/ADL/CPUDefinitionVisitor.cpp
+    src/ASM/parser_ASM.cpp
     ${ADL_GENERATED_SOURCES}
     ${ADL_GENERATED_HEADERS}
-)
-
-target_include_directories(cpu_simulator PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-    "${ADL_GENERATED_DIR}"
-)
-
-target_link_libraries(cpu_simulator PRIVATE
-    antlr4_static
-)
-
-target_compile_definitions(cpu_simulator PRIVATE
-    ANTLR4CPP_STATIC
-)
-
-add_executable(asm_parser
-    src/asm_main.cpp
     ${ASM_GENERATED_SOURCES}
     ${ASM_GENERATED_HEADERS}
 )
 
-target_include_directories(asm_parser PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
+target_include_directories(parser_assembler_tester PRIVATE
+    "${PROJECT_SOURCE_DIR}/include/ADL"
+    "${PROJECT_SOURCE_DIR}/include/ASM"
     "${ADL_GENERATED_DIR}"
+    "${ASM_GENERATED_DIR}"
 )
 
-target_link_libraries(asm_parser PRIVATE
+target_link_libraries(parser_assembler_tester PRIVATE
     antlr4_static
 )
 
-target_compile_definitions(asm_parser PRIVATE
+target_compile_definitions(parser_assembler_tester PRIVATE
     ANTLR4CPP_STATIC
 )
+
