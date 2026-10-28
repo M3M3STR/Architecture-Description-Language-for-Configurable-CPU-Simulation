@@ -1,0 +1,18 @@
+program -> line_list EOF
+line_list -> line line_list || line
+line -> instruction comment NEWLINE || instruction NEWLINE || comment NEWLINE || NEWLINE
+
+instruction -> ID operand_list || ID
+operand_list -> operand ',' operand_list || operand
+operand -> reg_ref || NUM
+
+reg_ref -> 'r' NUM
+comment -> hash
+hash -> '#' (anything other than NEWLINE)
+NEWLINE -> '\n'
+
+ADD r1, r2, r3
+SUB r4, r5, r6
+# this is a comment
+ADD r7, r6, r5 # also a comment
+ 

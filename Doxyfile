@@ -1,0 +1,69 @@
+# ============================================================
+# Project
+# for more info https://www.doxygen.nl/manual/config.html#cfg_generate_html
+# ============================================================
+
+PROJECT_NAME           = "CPU Simulator"
+PROJECT_BRIEF          = "Architecture Description Language for Configurable CPU Simulation"
+
+# ============================================================
+# Input
+# ============================================================
+
+INPUT                  = src include
+RECURSIVE              = YES
+
+FILE_PATTERNS           = *.h \
+                          *.hpp \
+                          *.c \
+                          *.cpp
+
+# ============================================================
+# Output
+# ============================================================
+
+OUTPUT_DIRECTORY       = docs-output
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+GENERATE_LATEX         = NO
+
+# ============================================================
+# Documentation
+# ============================================================
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+
+# ============================================================
+# Diagrams / Graphviz
+# ============================================================
+
+HAVE_DOT               = YES
+
+CLASS_DIAGRAMS         = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+
+CALL_GRAPH             = YES
+CALLER_GRAPH            = YES
+
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+DIRECTORY_GRAPH        = YES
+
+# ============================================================
+# Misc
+# ============================================================
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+
+GENERATE_TREEVIEW      = YES
