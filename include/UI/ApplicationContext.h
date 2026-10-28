@@ -8,7 +8,11 @@
 
 struct ApplicationContext {
     std::optional<std::filesystem::path> selectedFile;
-    std::string adlSource;
+    std::string adlSource =
+R"(architecture my_cpu {
+
+}
+)";
 
     std::vector<std::string> errors;
 

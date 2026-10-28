@@ -1,6 +1,7 @@
 #ifndef ADL_SCREEN_H
 #define ADL_SCREEN_H
 
+#include "imgui.h"
 #include "UI/ApplicationContext.h"
 #include "UI/ScreenType.h"
 
@@ -22,6 +23,7 @@ public:
 
 protected:
     ApplicationContext& context;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar |ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
 };
 
 #endif //ADL_SCREEN_H

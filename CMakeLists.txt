@@ -75,6 +75,7 @@ add_executable(${PROJECT_NAME}
         src/UI/Screens/StartScreen.cpp
         src/UI/Screens/LoadingScreen.cpp
         src/UI/Screens/SimulatorScreen.cpp
+        ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

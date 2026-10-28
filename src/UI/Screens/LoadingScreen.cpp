@@ -5,14 +5,20 @@ void LoadingScreen::onEnter() {
     context.errors.clear();
 }
 ScreenRequest LoadingScreen::draw() {
-    ImGui::Begin("Loading", nullptr, ImGuiWindowFlags_NoTitleBar);
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+
+    ImGui::Begin("Loading", nullptr, window_flags);
+
     ImGui::TextUnformatted("Loading / validation (placeholder)");
-    ImGui::Text("ADL input length: %zu", context.adlSource.size());
+
     ScreenRequest result = ScreenRequest::None;
     if (ImGui::Button("Simulate validation success")) {
         context.processingComplete = true;
         result = ScreenRequest::Simulator;
     }
+
     if (ImGui::Button("Back to Start")) result = ScreenRequest::Start;
     ImGui::End();
     return result;
