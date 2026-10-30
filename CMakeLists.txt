@@ -81,6 +81,7 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/ADL/antlr/grammar
 )
 
 
@@ -273,4 +274,32 @@ target_link_libraries(${PROJECT_NAME}
         imgui
         SDL3::SDL3
         OpenGL::GL
+        antlr4_static
+)
+# --------------------------------------------------
+# Add parser implementation to the main application
+# --------------------------------------------------
+
+target_sources(${PROJECT_NAME} PRIVATE
+        # ADL Parser
+        src/ADL/parser_ADL.cpp
+        src/ADL/CPUDefinitionVisitor.cpp
+
+        # ASM Parser
+        src/ASM/parser_ASM.cpp
+
+        # Generated ANTLR sources
+        ${ADL_GENERATED_SOURCES}
+        ${ASM_GENERATED_SOURCES}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        "${PROJECT_SOURCE_DIR}/include/ADL"
+        "${PROJECT_SOURCE_DIR}/include/ASM"
+        "${ADL_GENERATED_DIR}"
+        "${ASM_GENERATED_DIR}"
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        ANTLR4CPP_STATIC
 )

@@ -4,6 +4,7 @@
 #include "SDL3/SDL_dialog.h"
 #include "SDL3/SDL_keyboard.h"
 #include "UI/Screen.h"
+#include "ADL/parser_ADL.h"
 
 class StartScreen final : public Screen {
     public:
@@ -20,6 +21,14 @@ class StartScreen final : public Screen {
         SDL_Window* activeWindow = SDL_GetKeyboardFocus();
 
         static void SDLCALL callback(void *userdata, const char * const *filelist, int filter);
+
+        void headerWidget();
+
+        void DescriptionWidget();
+
+        void UserInteractionWidget();
+
+        parser_ADL parser;
 
 };
 

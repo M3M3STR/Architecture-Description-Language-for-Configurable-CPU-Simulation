@@ -73,3 +73,5 @@ Desktop.ini
 # Doxygen generated documentation
 # ===============================
 docs-output/
+
+include/ADL/antlr/grammar/
