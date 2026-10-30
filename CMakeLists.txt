@@ -248,6 +248,8 @@ add_executable(parser_assembler_tester
     src/ADL/parser_ADL.cpp
     src/ADL/CPUDefinitionVisitor.cpp
     src/ASM/parser_ASM.cpp
+    src/ASM/assembler.cpp
+    src/ASM/AssemblerVisitor.cpp
     ${ADL_GENERATED_SOURCES}
     ${ADL_GENERATED_HEADERS}
     ${ASM_GENERATED_SOURCES}

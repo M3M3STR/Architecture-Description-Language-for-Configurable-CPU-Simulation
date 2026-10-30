@@ -1,15 +1,13 @@
 #pragma once
-
 #include <iostream>
 #include <string>
 #include <fstream>
-
-#include "antlr4-runtime.h"
-#include "ASMLexer.h"
-#include "ASMParser.h"
+#include <vector>
+#include "AssemblerVisitor.h"
 
 class parser_ASM {
 public:
-    ASMParser::ProgramContext* parseFromString(std::string sourceString);
-    ASMParser::ProgramContext* parseFromFilePath(std::string filePath);
-};
+    // takes text and returns a list of clean instructions
+    std::vector<ParsedInstruction> parseFromString(std::string sourceString);
+    std::vector<ParsedInstruction> parseFromFilePath(std::string filePath);
+};  

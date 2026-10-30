@@ -3,6 +3,7 @@
 
 #include "parser_ADL.h"
 #include "parser_ASM.h"
+#include "assembler.h"
 
 int main()
 {
@@ -59,7 +60,12 @@ int main()
     ADLParser::ArchitectureContext* adlTree = parserADL.parseFromString(sourceADL);
 	CPU cpu = parserADL.convertParseTreeToCPUDefinition(adlTree);
 
-	ASMParser::ProgramContext* asmTree = parserASM.parseFromString(sourceASM);
+    // parse asm and get the clean instructions
+    std::vector<ParsedInstruction> asmInstructions = parserASM.parseFromString(sourceASM);
+    std::cout << "\nassembler test\n";
 
+    // give asm instructions and cpu struct from adl to the assembler
+    std::vector<uint32_t> machine_code = Assembler::assemble(asmInstructions, cpu);
+    std::cout << "Machine Code size: " << machine_code.size() << "\n";
     return 0;
 }
