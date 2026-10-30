@@ -6,9 +6,83 @@ project(CPUSimulator
     LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# ============================================================
+# Dependencies
+# ============================================================
+
+include(FetchContent)
+
+# ----------------------------
+# SDL3
+# ----------------------------
+
+FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.4.16
+)
+
+FetchContent_MakeAvailable(SDL3)
+
+
+# ----------------------------
+# Dear ImGui
+# ----------------------------
+
+FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG v1.92.2b
+)
+
+FetchContent_MakeAvailable(imgui)
+
+add_library(imgui STATIC
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui
+        PUBLIC
+        ${imgui_SOURCE_DIR}
+        ${imgui_SOURCE_DIR}/backends
+)
+
+target_link_libraries(imgui
+        PUBLIC
+        SDL3::SDL3
+)
+
+# ----------------------------
+# OpenGL
+# ----------------------------
+
+find_package(OpenGL REQUIRED)
+
+add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/UI/Application.cpp
+        src/UI/ScreenManager.cpp
+        src/UI/Screens/StartScreen.cpp
+        src/UI/Screens/LoadingScreen.cpp
+        src/UI/Screens/SimulatorScreen.cpp
+        ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+)
+
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
 
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
@@ -70,7 +144,7 @@ set(ADL_GRAMMAR
 )
 
 set(ADL_GENERATED_DIR
-    "${PROJECT_BINARY_DIR}/generated"
+    "${PROJECT_BINARY_DIR}/generated/ADL"
 )
 
 set(ADL_GENERATED_SOURCES
@@ -121,18 +195,22 @@ set(ASM_GRAMMAR
     "${PROJECT_SOURCE_DIR}/grammar/ASM.g4"
 )
 
+set(ASM_GENERATED_DIR
+    "${PROJECT_BINARY_DIR}/generated/ASM"
+)
+
 set(ASM_GENERATED_SOURCES
-    "${ADL_GENERATED_DIR}/ASMLexer.cpp"
-    "${ADL_GENERATED_DIR}/ASMParser.cpp"
-    "${ADL_GENERATED_DIR}/ASMBaseVisitor.cpp"
-    "${ADL_GENERATED_DIR}/ASMVisitor.cpp"
+    "${ASM_GENERATED_DIR}/ASMLexer.cpp"
+    "${ASM_GENERATED_DIR}/ASMParser.cpp"
+    "${ASM_GENERATED_DIR}/ASMBaseVisitor.cpp"
+    "${ASM_GENERATED_DIR}/ASMVisitor.cpp"
 )
 
 set(ASM_GENERATED_HEADERS
-    "${ADL_GENERATED_DIR}/ASMLexer.h"
-    "${ADL_GENERATED_DIR}/ASMParser.h"
-    "${ADL_GENERATED_DIR}/ASMBaseVisitor.h"
-    "${ADL_GENERATED_DIR}/ASMVisitor.h"
+    "${ASM_GENERATED_DIR}/ASMLexer.h"
+    "${ASM_GENERATED_DIR}/ASMParser.h"
+    "${ASM_GENERATED_DIR}/ASMBaseVisitor.h"
+    "${ASM_GENERATED_DIR}/ASMVisitor.h"
 )
 
 add_custom_command(
@@ -142,7 +220,7 @@ add_custom_command(
 
     COMMAND
         "${CMAKE_COMMAND}" -E make_directory
-        "${ADL_GENERATED_DIR}"
+        "${ASM_GENERATED_DIR}"
 
     COMMAND
         "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR_JAR}"
@@ -150,7 +228,7 @@ add_custom_command(
         -no-listener
         -visitor
         -Xexact-output-dir
-        -o "${ADL_GENERATED_DIR}"
+        -o "${ASM_GENERATED_DIR}"
         "${ASM_GRAMMAR}"
 
     DEPENDS
@@ -165,40 +243,34 @@ add_custom_command(
 # Application
 # --------------------------------------------------
 
-add_executable(cpu_simulator
-    src/main.cpp
+add_executable(parser_assembler_tester
+    tests/parser_assembler_testbench.cpp
+    src/ADL/parser_ADL.cpp
+    src/ADL/CPUDefinitionVisitor.cpp
+    src/ASM/parser_ASM.cpp
     ${ADL_GENERATED_SOURCES}
     ${ADL_GENERATED_HEADERS}
-)
-
-target_include_directories(cpu_simulator PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-    "${ADL_GENERATED_DIR}"
-)
-
-target_link_libraries(cpu_simulator PRIVATE
-    antlr4_static
-)
-
-target_compile_definitions(cpu_simulator PRIVATE
-    ANTLR4CPP_STATIC
-)
-
-add_executable(asm_parser
-    src/asm_main.cpp
     ${ASM_GENERATED_SOURCES}
     ${ASM_GENERATED_HEADERS}
 )
 
-target_include_directories(asm_parser PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
+target_include_directories(parser_assembler_tester PRIVATE
+    "${PROJECT_SOURCE_DIR}/include/ADL"
+    "${PROJECT_SOURCE_DIR}/include/ASM"
     "${ADL_GENERATED_DIR}"
+    "${ASM_GENERATED_DIR}"
 )
 
-target_link_libraries(asm_parser PRIVATE
+target_link_libraries(parser_assembler_tester PRIVATE
     antlr4_static
 )
 
-target_compile_definitions(asm_parser PRIVATE
+target_compile_definitions(parser_assembler_tester PRIVATE
     ANTLR4CPP_STATIC
+)
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        imgui
+        SDL3::SDL3
+        OpenGL::GL
 )

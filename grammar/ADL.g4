@@ -1,16 +1,14 @@
 grammar ADL;
 
-program          : architecture EOF ;
+architecture     : ARCHITECTURE ID LBRACE decl_list RBRACE EOF;
 
-architecture     : ARCHITECTURE ID LBRACE decl_list RBRACE ;
-
-decl_list        : decl+ ;
-
-decl             : register_decl
-                 | instruction_decl
-                 ;
+decl_list        : register_decl memory_decl instruction_list ;
 
 register_decl    : REGISTERS NUM ;
+
+memory_decl      : MEMORY NUM ;
+
+instruction_list : instruction_decl+ ;
 
 instruction_decl : INSTRUCTION ID LBRACE opcode_decl format_decl RBRACE ;
 
@@ -27,7 +25,7 @@ REGISTERS    : 'registers' ;
 INSTRUCTION  : 'instruction' ;
 OPCODE       : 'opcode' ;
 FORMAT       : 'format' ;
-
+MEMORY       : 'memory' ;
 LBRACE       : '{' ;
 RBRACE       : '}' ;
 
