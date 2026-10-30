@@ -15,6 +15,7 @@ struct CPU {
 	std::string name;
 	int register_count;
 	int memory_size;
+	int word_size;
 	std::vector<Instruction> instructions;
 } typedef CPU;
 

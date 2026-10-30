@@ -7,5 +7,5 @@
 class Assembler {
 public:
     // takes the clean list and the cpu to make machine code
-    static std::vector<uint32_t> assemble(const std::vector<ParsedInstruction>& instructions, const CPU& cpu);
+    static std::vector<uint64_t> assemble(const std::vector<ParsedInstruction>& instructions, const CPU& cpu);
 };
