@@ -3,6 +3,7 @@
 
 #include "parser_ADL.h"
 #include "parser_ASM.h"
+#include "assembler.h"
 
 int main()
 {
@@ -34,19 +35,19 @@ int main()
             registers 16
             memory 1024
             instruction add {
-                opcode 1
+                opcode 0
                 format RRR
             }
             instruction sub {
-                opcode 2
-                format RRR
+                opcode 1
+                format RRI
             }
         }
     )";
 
     std::string sourceASM = R"(
         add r1, r2, r3
-        sub r4, r5, r6
+        sub r4, r5, 6
         # this is a comment
         add r7, r1, r4   # inline comment
     )";
@@ -56,10 +57,16 @@ int main()
     parser_ASM parserASM;
 
 
-    ADLParser::ArchitectureContext* adlTree = parserADL.parseFromString(sourceADL);
-	CPU cpu = parserADL.convertParseTreeToCPUDefinition(adlTree);
+    ADLParser::ArchitectureContext* adlTree = parserADL.parseFromString(sourceADL); // parses raw text into antlr tree
+	CPU cpu = parserADL.convertParseTreeToCPUDefinition(adlTree); // visitor walks the tree and extracts the clean CPU struct
+    cpu.word_size = 16; 
 
-	ASMParser::ProgramContext* asmTree = parserASM.parseFromString(sourceASM);
+    // parse asm and get the clean instructions
+    std::vector<ParsedInstruction> asmInstructions = parserASM.parseFromString(sourceASM);
+    std::cout << "\nassembler test:\n";
 
+    // give asm instructions and cpu struct from adl to the assembler
+    std::vector<uint64_t> machine_code = Assembler::assemble(asmInstructions, cpu);
+    std::cout << "Machine Code size: " << machine_code.size() << "\n";
     return 0;
 }
