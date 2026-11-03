@@ -190,23 +190,19 @@ ScreenRequest StartScreen::draw() {
     // }
     // ImGui::SameLine();
     //
-    // if (ImGui::Button("Build Simulator") && !context.adlSource.empty()) {
-    //
-    // // TODO change this soon, when std::expect is implemented
-    //     auto* result = parser.parseFromString(context.adlSource);
-    //     if (result) {
-    //         std::cout << "parsing was successful" << std::endl;
-    //     }
-    //     else {
-    //         std::cout << "parsing was not successful" << std::endl;
-    //
-    //     }
-    //
-    //     ImGui::EndChild();
-    //     ImGui::End();
-    //
-    //     return ScreenRequest::Loading;
-    // }
+    if (ImGui::Button("Build Simulator") && !context.adlSource.empty()) {
+
+    // TODO change this soon, when std::expect is implemented
+        auto* result = parser.parseFromString(context.adlSource);
+        if (result) {
+            std::cout << "parsing was successful" << std::endl;
+            ImGui::End();
+            return ScreenRequest::Loading;
+        }
+        else {
+            std::cout << "parsing was not successful" << std::endl;
+        }
+    }
 
     //ImGui::EndChild();
     ImGui::End();
