@@ -1,37 +1,16 @@
 #include <iostream>
 #include <string>
 
-#include "parser_ADL.h"
-#include "parser_ASM.h"
+#include "ADL/parser_ADL.h"
+#include "ASM/parser_ASM.h"
 
 int main()
 {
-    /*
-    CPUDefinitionVisitor visitor;
-    antlr4::ANTLRInputStream input(source);
-    ADLLexer lexer(&input);
-    antlr4::CommonTokenStream tokens(&lexer);
-    ADLParser parser(&tokens);
-
-    auto* tree = parser.architecture();
-
-    std::cout << tree->toStringTree(&parser) << '\n';
-
-    if (parser.getNumberOfSyntaxErrors() != 0)
-    {
-        std::cerr << "ADL parsing failed.\n";
-        return 1;
-    }
-
-    std::cout << "ADL parsing succeeded!\n";
-
-	std::any result = visitor.visitArchitecture(tree);
-	CPU cpu = std::any_cast<CPU>(result);
-    printCPU(cpu);
-    */
+    
     std::string sourceADL = R"(
         architecture MyCPU {
             registers 16
+            hi
             memory 1024
             instruction add {
                 opcode 1
@@ -56,10 +35,31 @@ int main()
     parser_ASM parserASM;
 
 
-    ADLParser::ArchitectureContext* adlTree = parserADL.parseFromString(sourceADL);
-	CPU cpu = parserADL.convertParseTreeToCPUDefinition(adlTree);
+    std::expected<IntermediateModel, std::vector<SyntaxError>> adlResult = parserADL.parseFromString(sourceADL);
+    if (!adlResult)
+    {
+        std::cerr << "Failed to parse ADL: " << std::endl;
 
-	ASMParser::ProgramContext* asmTree = parserASM.parseFromString(sourceASM);
+        for (const auto& error : adlResult.error())
+        {
+            std::cerr
+                << "Line " << error.line
+                << ", Column " << error.column
+                << ": " << error.msg << '\n';
+        }
+
+        return 1;
+    }
+    IntermediateModel cpu = adlResult.value();
+    
+
+    //std::expected<ASMDefinition, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
+    //if (!asmResult)
+    //{
+    //    std::cerr << "Failed to parse ASM: " << asmResult.error() << '\n';
+    //    return 1;
+    //}
+    //ASMDefinition asmDef = asmResult.value();
 
     return 0;
 }
