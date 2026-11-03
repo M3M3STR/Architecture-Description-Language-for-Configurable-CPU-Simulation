@@ -247,8 +247,11 @@ add_custom_command(
 add_executable(parser_assembler_tester
     tests/parser_assembler_testbench.cpp
     src/ADL/parser_ADL.cpp
-    src/ADL/CPUDefinitionVisitor.cpp
     src/ASM/parser_ASM.cpp
+    src/Common/SyntaxErrorListener.cpp
+    src/Common/IntermediateModel.cpp
+    src/ADL/IntermediateModelBuilder.cpp
+    
     ${ADL_GENERATED_SOURCES}
     ${ADL_GENERATED_HEADERS}
     ${ASM_GENERATED_SOURCES}
@@ -256,8 +259,7 @@ add_executable(parser_assembler_tester
 )
 
 target_include_directories(parser_assembler_tester PRIVATE
-    "${PROJECT_SOURCE_DIR}/include/ADL"
-    "${PROJECT_SOURCE_DIR}/include/ASM"
+    "${PROJECT_SOURCE_DIR}/include"
     "${ADL_GENERATED_DIR}"
     "${ASM_GENERATED_DIR}"
 )
