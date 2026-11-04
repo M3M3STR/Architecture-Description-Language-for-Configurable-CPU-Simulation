@@ -1,4 +1,5 @@
 #include "ADL/parser_ADL.h"
+#include <expected>
 
 std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFromString(std::string sourceString) {
 

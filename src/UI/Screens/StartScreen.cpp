@@ -85,7 +85,7 @@ void StartScreen::DescriptionWidget() {
         if (ImGui::Button("Load a File")) {
             SDL_ShowOpenFileDialog(
                 callback,
-                &context.adlSource,
+                &adlSource,
                 activeWindow,
                 filters,
                 SDL_arraysize(filters),
@@ -130,9 +130,10 @@ void StartScreen::UserInteractionWidget() {
         //get the full height of window
         float target_height = avail_size.y - 30.0f;
 
-        if (ImGui::InputTextMultiline("##InputBox", &context.adlSource, ImVec2(target_width, target_height))) {}
+        if (ImGui::InputTextMultiline("##InputBox", &adlSource, ImVec2(target_width, target_height))) {}
 
-        ImGui::TableNextColumn(); ImGui::Text("ADL Wiki");
+        ImGui::TableNextColumn();
+        if (ImGui::InputTextMultiline("##OutputtBox", &errorOutput, ImVec2(target_width, target_height))) {}
 
         ImGui::EndTable();
     }
@@ -190,16 +191,22 @@ ScreenRequest StartScreen::draw() {
     // }
     // ImGui::SameLine();
     //
-    if (ImGui::Button("Build Simulator") && !context.adlSource.empty()) {
+    if (ImGui::Button("Build Simulator") && !adlSource.empty()) {
 
     // TODO change this soon, when std::expect is implemented
-        auto* result = parser.parseFromString(context.adlSource);
+        auto result = parser.parseFromString(adlSource);
         if (result) {
             std::cout << "parsing was successful" << std::endl;
             ImGui::End();
             return ScreenRequest::Loading;
         }
         else {
+            std::vector<SyntaxError> errorsList = result.error();
+
+            for (auto error : errorsList) {
+                errorOutput += std::format("On Line: {} there is an error: {}\n", error.line, error.msg);
+            }
+
             std::cout << "parsing was not successful" << std::endl;
         }
     }

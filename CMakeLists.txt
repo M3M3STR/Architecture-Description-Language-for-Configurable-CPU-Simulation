@@ -41,6 +41,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imgui)
 
+FetchContent_Declare(
+        ImGuiColorTextEdit
+        GIT_REPOSITORY https://github.com/goossens/ImGuiColorTextEdit.git
+        GIT_TAG v1.93.0
+)
+
+FetchContent_MakeAvailable(ImGuiColorTextEdit)
+
 add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
         ${imgui_SOURCE_DIR}/imgui_draw.cpp
@@ -67,23 +75,6 @@ target_link_libraries(imgui
 # ----------------------------
 
 find_package(OpenGL REQUIRED)
-
-add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/UI/Application.cpp
-        src/UI/ScreenManager.cpp
-        src/UI/Screens/StartScreen.cpp
-        src/UI/Screens/LoadingScreen.cpp
-        src/UI/Screens/SimulatorScreen.cpp
-        ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
-)
-
-target_include_directories(${PROJECT_NAME}
-        PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/include/ADL/antlr/grammar
-)
-
 
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
@@ -239,69 +230,26 @@ add_custom_command(
     COMMENT "Generating C++ parser from ASM.g4"
     VERBATIM
 )
+# ============================================================
+# Project Modules
+# ============================================================
 
-# --------------------------------------------------
-# Application
-# --------------------------------------------------
+add_subdirectory(src)
 
-add_executable(parser_assembler_tester
-    tests/parser_assembler_testbench.cpp
-    src/ADL/parser_ADL.cpp
-    src/ASM/parser_ASM.cpp
-    src/Common/SyntaxErrorListener.cpp
-    src/Common/IntermediateModel.cpp
-    src/ADL/IntermediateModelBuilder.cpp
-    
-    ${ADL_GENERATED_SOURCES}
-    ${ADL_GENERATED_HEADERS}
-    ${ASM_GENERATED_SOURCES}
-    ${ASM_GENERATED_HEADERS}
+# ============================================================
+# Main Application
+# ============================================================
+
+add_executable(${PROJECT_NAME}
+        src/main.cpp
 )
 
-target_include_directories(parser_assembler_tester PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-    "${ADL_GENERATED_DIR}"
-    "${ASM_GENERATED_DIR}"
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        SimulatorUI
 )
 
-target_link_libraries(parser_assembler_tester PRIVATE
-    antlr4_static
-)
+# ============================================================
+# Tests
+# ============================================================
 
-target_compile_definitions(parser_assembler_tester PRIVATE
-    ANTLR4CPP_STATIC
-)
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE
-        imgui
-        SDL3::SDL3
-        OpenGL::GL
-        antlr4_static
-)
-# --------------------------------------------------
-# Add parser implementation to the main application
-# --------------------------------------------------
-
-target_sources(${PROJECT_NAME} PRIVATE
-        # ADL Parser
-        src/ADL/parser_ADL.cpp
-        src/ADL/CPUDefinitionVisitor.cpp
-
-        # ASM Parser
-        src/ASM/parser_ASM.cpp
-
-        # Generated ANTLR sources
-        ${ADL_GENERATED_SOURCES}
-        ${ASM_GENERATED_SOURCES}
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-        "${PROJECT_SOURCE_DIR}/include/ADL"
-        "${PROJECT_SOURCE_DIR}/include/ASM"
-        "${ADL_GENERATED_DIR}"
-        "${ASM_GENERATED_DIR}"
-)
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-        ANTLR4CPP_STATIC
-)
+add_subdirectory(tests)

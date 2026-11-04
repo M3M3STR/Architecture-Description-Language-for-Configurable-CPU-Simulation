@@ -30,6 +30,9 @@ class StartScreen final : public Screen {
 
         parser_ADL parser;
 
+        std::string adlSource = R"(architecture my_cpu {\n \t \n })" ;
+        std::string errorOutput = "";
+
 };
 
 #endif //ADL_STARTSCREEN_H
