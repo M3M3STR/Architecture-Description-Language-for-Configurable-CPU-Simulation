@@ -3,25 +3,25 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <memory>
+#include <expected>
 
 #include "antlr4-runtime.h"
 #include "ADLLexer.h"
 #include "ADLParser.h"
-#include "CPUDefinitionVisitor.h"
+#include "Common/IntermediateModel.h"
+#include "Common/SyntaxErrorListener.h"
+#include "IntermediateModelBuilder.h"
 
 class parser_ADL {
 private:
-	std::unique_ptr<antlr4::ANTLRInputStream> input;
-	std::unique_ptr<ADLLexer> lexer;
-	std::unique_ptr<antlr4::CommonTokenStream> tokens;
-	std::unique_ptr<ADLParser> parser;
+	IntermediateModel convertParseTreeToIntermediateModel(ADLParser::ArchitectureContext* tree);
 
 public:
-	ADLParser::ArchitectureContext* parseFromString(std::string sourceString);
-	ADLParser::ArchitectureContext* parseFromFilePath(std::string filePath);
-	CPU convertParseTreeToCPUDefinition(ADLParser::ArchitectureContext* tree);
-};
+	std::expected<IntermediateModel, std::vector<SyntaxError>> parseFromString(std::string sourceString);
+	std::expected<IntermediateModel, std::vector<SyntaxError>> parseFromFilePath(std::string filePath);
 
+
+	
+};
 
 

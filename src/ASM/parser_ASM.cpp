@@ -1,6 +1,7 @@
 #include "parser_ASM.h"
 #include "ASMLexer.h"   
 #include "ASMParser.h"  
+#include "ASM/parser_ASM.h"
 
 std::vector<ParsedInstruction> parser_ASM::parseFromString(std::string sourceString) {
     antlr4::ANTLRInputStream input(sourceString);
