@@ -5,6 +5,7 @@
 #include "SDL3/SDL_keyboard.h"
 #include "UI/Screen.h"
 #include "ADL/parser_ADL.h"
+#include "TextEditor.h"
 
 class StartScreen final : public Screen {
     public:

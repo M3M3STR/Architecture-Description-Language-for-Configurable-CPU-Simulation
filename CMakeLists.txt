@@ -41,6 +41,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imgui)
 
+# ----------------------------
+# ImGuiColorTextEdit
+# ----------------------------
+
 FetchContent_Declare(
         ImGuiColorTextEdit
         GIT_REPOSITORY https://github.com/goossens/ImGuiColorTextEdit.git
@@ -48,6 +52,22 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(ImGuiColorTextEdit)
+
+if(NOT imguicolortextedit_POPULATED)
+    FetchContent_Populate(ImGuiColorTextEdit)
+endif()
+
+add_library(ImGuiColorTextEdit STATIC
+        ${imguicolortextedit_SOURCE_DIR}/TextEditor.cpp
+)
+
+target_include_directories(ImGuiColorTextEdit PUBLIC
+        ${imguicolortextedit_SOURCE_DIR}
+)
+
+target_link_libraries(ImGuiColorTextEdit PUBLIC
+        imgui
+)
 
 add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp

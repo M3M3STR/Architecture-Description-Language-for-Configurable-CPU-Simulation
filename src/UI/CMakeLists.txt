@@ -16,6 +16,7 @@ add_library(SimulatorUI STATIC
         ${UI_SOURCES}
         ${SCREEN_SOURCES}
         ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
+
 )
 
 target_include_directories(SimulatorUI PUBLIC
@@ -26,6 +27,7 @@ target_link_libraries(SimulatorUI PUBLIC
         ADL
         ASM
         imgui
+        ImGuiColorTextEdit
         SDL3::SDL3
         OpenGL::GL
 )
