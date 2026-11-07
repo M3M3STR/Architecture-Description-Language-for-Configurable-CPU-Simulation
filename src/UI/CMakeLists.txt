@@ -23,9 +23,10 @@ target_include_directories(SimulatorUI PUBLIC
         "${PROJECT_SOURCE_DIR}/include"
 )
 
+# TODO uncomment out ASM when asm has been updated
 target_link_libraries(SimulatorUI PUBLIC
         ADL
-        ASM
+        #ASM
         imgui
         ImGuiColorTextEdit
         SDL3::SDL3
