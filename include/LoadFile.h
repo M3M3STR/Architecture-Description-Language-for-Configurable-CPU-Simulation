@@ -8,7 +8,7 @@
 
 namespace FileLoader {
     inline void some() {
-        std::cout << "Some called" << std::endl;
+        std::cout << "Loaded file successfully" << std::endl;
     }
 
     inline void LoadFile(){}

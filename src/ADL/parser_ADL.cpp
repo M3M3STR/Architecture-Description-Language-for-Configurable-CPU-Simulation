@@ -1,57 +1,77 @@
-#include "parser_ADL.h"
+#include "ADL/parser_ADL.h"
+#include <expected>
 
-ADLParser::ArchitectureContext* parser_ADL::parseFromString(std::string sourceString) {
-	// Reset old states if they exist
-	parser.reset();
-	tokens.reset();
-	lexer.reset();
-	input.reset();
+std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFromString(std::string sourceString) {
 
-	input = std::make_unique<antlr4::ANTLRInputStream>(sourceString);
-	lexer = std::make_unique<ADLLexer>(input.get());
-	tokens = std::make_unique<antlr4::CommonTokenStream>(lexer.get());
-	parser = std::make_unique<ADLParser>(tokens.get());
-	auto* tree = parser->architecture();
+	// Create a vector to hold syntax errors and a listener to populate it
+	std::vector<SyntaxError> errorsList;
+	SyntaxErrorListener errorListener(errorsList);
 
-	std::cout << tree->toStringTree(parser.get()) << '\n';
+	// Set up ANTLR input stream, lexer, token stream, and parser
+	antlr4::ANTLRInputStream input(sourceString);
+	ADLLexer lexer(&input);
+	antlr4::CommonTokenStream tokens(&lexer);
+	ADLParser parser(&tokens);
 
-	if (parser->getNumberOfSyntaxErrors() != 0)
+	// Attach the error listener to the parser
+	parser.removeErrorListeners(); // Remove default error listeners
+	parser.addErrorListener(&errorListener);
+
+	// Parse the input and build the parse tree
+	auto* tree = parser.architecture();
+
+	std::cout << tree->toStringTree(&parser) << '\n';
+
+	if (parser.getNumberOfSyntaxErrors() != 0)
 	{
 		std::cerr << "ADL parsing failed.\n";
-		return nullptr;
+		return std::unexpected(errorsList);
 	}
 
 	std::cout << "ADL parsing succeeded!\n";
-
-	return tree;
+	
+	return convertParseTreeToIntermediateModel(tree);
 }
 
-ADLParser::ArchitectureContext* parser_ADL::parseFromFilePath(std::string filePath) {
+std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFromFilePath(std::string filePath) {
 
+	// Create a vector to hold syntax errors and a listener to populate it
+	std::vector<SyntaxError> errorsList;
+	SyntaxErrorListener errorListener(errorsList);
+
+	// Set up ANTLR input stream, lexer, token stream, and parser
 	std::ifstream stream;
 	stream.open(filePath);
-	input = std::make_unique<antlr4::ANTLRInputStream>(stream);
-	lexer = std::make_unique<ADLLexer>(input.get());
-	tokens = std::make_unique<antlr4::CommonTokenStream>(lexer.get());
-	parser = std::make_unique<ADLParser>(tokens.get());
-	auto* tree = parser->architecture();
 
-	std::cout << tree->toStringTree(parser.get()) << '\n';
+	antlr4::ANTLRInputStream input(stream);
+	ADLLexer lexer(&input);
+	antlr4::CommonTokenStream tokens(&lexer);
+	ADLParser parser(&tokens);
 
-	if (parser->getNumberOfSyntaxErrors() != 0)
+	// Attach the error listener to the parser
+	parser.removeErrorListeners(); // Remove default error listeners
+	parser.addErrorListener(&errorListener);
+
+	auto* tree = parser.architecture();
+
+	std::cout << tree->toStringTree(&parser) << '\n';
+
+	if (parser.getNumberOfSyntaxErrors() != 0)
 	{
 		std::cerr << "ADL parsing failed.\n";
-		return nullptr;
+		return std::unexpected(errorsList);
 	}
 
 	std::cout << "ADL parsing succeeded!\n";
 
-	return tree;
+	return convertParseTreeToIntermediateModel(tree);
 }
 
-CPU parser_ADL::convertParseTreeToCPUDefinition(ADLParser::ArchitectureContext* tree) {
-	CPUDefinitionVisitor visitor;
-	std::any result = visitor.visitArchitecture(tree);
-	CPU cpu = std::any_cast<CPU>(result);
-	return cpu;
+IntermediateModel parser_ADL::convertParseTreeToIntermediateModel(ADLParser::ArchitectureContext* tree) {
+
+	// Use the IntermediateModelBuilder to visit the parse tree and build the IntermediateModel
+	IntermediateModelBuilder builder;
+	std::any result = builder.visitArchitecture(tree);
+	IntermediateModel model = std::any_cast<IntermediateModel>(result);
+	return model;
 }
