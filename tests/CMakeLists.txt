@@ -12,5 +12,5 @@ add_executable(parser_assembler_tester
 
 target_link_libraries(parser_assembler_tester PRIVATE
         ADL
-        ASM
+        #ASM
 )

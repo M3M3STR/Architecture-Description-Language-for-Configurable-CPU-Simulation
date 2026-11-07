@@ -8,5 +8,5 @@
 
 add_subdirectory(Common)
 add_subdirectory(ADL)
-add_subdirectory(ASM)
+#add_subdirectory(ASM)
 add_subdirectory(UI)
