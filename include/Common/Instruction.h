@@ -4,6 +4,6 @@
 
 struct Instruction {
 	std::string name;
-	int opcode;
+	unsigned int opcode;
 	std::string format;
-} typedef Instruction;
+};

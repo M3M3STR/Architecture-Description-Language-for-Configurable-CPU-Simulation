@@ -19,6 +19,9 @@ target_include_directories(cpu_simulator
         ${PROJECT_SOURCE_DIR}/include
 )
 
+message(STATUS "Source: ${PROJECT_SOURCE_DIR}")
+message(STATUS "Binary: ${PROJECT_BINARY_DIR}")
+
 
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
@@ -63,6 +66,30 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(antlr4)
+
+# This section is a workaround for a missing include in the ANTLR C++ runtime that causes compilation errors.
+# It adds the necessary 'include' directive to the ProfilingATNSimulator.cpp file if it is not already present.
+#--------------------------------------------------
+set(ANTLR_PROFILING_FILE
+    "${antlr4_SOURCE_DIR}/runtime/Cpp/runtime/src/atn/ProfilingATNSimulator.cpp"
+)
+
+file(READ "${ANTLR_PROFILING_FILE}" ANTLR_PROFILING_CONTENT)
+
+if(NOT ANTLR_PROFILING_CONTENT MATCHES "#include <chrono>")
+    string(REPLACE
+        "#include \"atn/ProfilingATNSimulator.h\""
+        "#include \"atn/ProfilingATNSimulator.h\"\n#include <chrono>"
+        ANTLR_PROFILING_CONTENT
+        "${ANTLR_PROFILING_CONTENT}"
+    )
+
+    file(WRITE
+        "${ANTLR_PROFILING_FILE}"
+        "${ANTLR_PROFILING_CONTENT}"
+    )
+endif()
+#--------------------------------------------------
 
 if(TARGET antlr4_static)
     set_property(TARGET antlr4_static
@@ -122,6 +149,9 @@ add_custom_command(
     COMMENT "Generating C++ parser from ADL.g4"
     VERBATIM
 )
+message(STATUS "ADL OUTPUTS: ${ADL_GENERATED_SOURCES}")
+message(STATUS "ADL OUTPUT DIR: ${ADL_GENERATED_DIR}")
+
 
 # --------------------------------------------------
 # Generate C++ files from the ASM grammar
@@ -173,6 +203,14 @@ add_custom_command(
 
     COMMENT "Generating C++ parser from ASM.g4"
     VERBATIM
+)
+
+add_custom_target(generate_parsers
+    DEPENDS
+        ${ADL_GENERATED_SOURCES}
+        ${ADL_GENERATED_HEADERS}
+        ${ASM_GENERATED_SOURCES}
+        ${ASM_GENERATED_HEADERS}
 )
 
 # --------------------------------------------------
