@@ -6,6 +6,7 @@
 #include <expected>
 #include "ASM/AssemblerVisitor.h"
 #include "Common/SyntaxError.h" 
+#include "ASM/parser_ASM.h"
 
 class parser_ASM {
 public:

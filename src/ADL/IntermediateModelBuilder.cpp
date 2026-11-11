@@ -72,15 +72,15 @@ std::any IntermediateModelBuilder::visitField_decl(ADLParser::Field_declContext*
 
 	std::string type = ctx->field_type()->getText();
 
-	if (type == "OPCODE") {
+	if (type == "opcode") {
 		f.type = FieldType::OPCODE;
-	} else if (type == "REG_DEST") {
+	} else if (type == "reg_dest") {
 		f.type = FieldType::DESTINATION_REGISTER;
 	}
-	else if (type == "REG_SRC") {
+	else if (type == "reg_src") {
 		f.type = FieldType::SOURCE_REGISTER;
 	}
-	else if (type == "IMM_UNSIGNED") {
+	else if (type == "imm_unsigned") {
 		f.type = FieldType::IMMEDIATE_UNSIGNED;
 	}
 
