@@ -1,81 +1,68 @@
-#include "assembler.h"
+#include "ASM/assembler.h"
 #include <iostream>
-#include <cmath>
 
-std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& instructions, const CPU& cpu) {
+std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& instructions, const IntermediateModel& model) {
     std::vector<uint64_t> machine_code;
 
-    std::cout << "CPU Name: " << cpu.name << "\n";
-    
-    // calculate how many bits the opcode needs based on total instructions
-    int opcode_bits = 1;
-    if (cpu.instructions.size() > 1) {
-        opcode_bits = std::ceil(std::log2(cpu.instructions.size()));
-    }
-
-    // calculate how many bits a register needs based on total registers
-    int reg_bits = 1;
-    if (cpu.register_count > 1) {
-        reg_bits = std::ceil(std::log2(cpu.register_count));
-    }
-
-    // print for testing
-    std::cout << "Word Size: " << cpu.word_size << " | Opcode Bits: " << opcode_bits << " | Reg Bits: " << reg_bits << "\n\n";
-
-    for (int i = 0; i < instructions.size(); i++) {
-        std::string mnemonic = instructions[i].mnemonic;
-        std::vector<Operand> resolved_operands = instructions[i].operands;
-
+    for (const auto& inst : instructions) {
+        // 1. Find the instruction in Ricky's IR
+        Instruction ir_inst;
         bool found = false;
-        
-        for (int j = 0; j < cpu.instructions.size(); j++){ 
-            Instruction inst = cpu.instructions[j];
-            
-            if (inst.name == mnemonic) { 
-                int opcode = inst.opcode;
-                uint64_t machine_word = 0;
-                
-                // start the shift at the msb
-                int current_shift = cpu.word_size - opcode_bits;
-                
-                // put the opcode at the far left
-                machine_word = machine_word | (opcode << current_shift);
-
-                // loop through operands and pack them
-                for (int k = 0; k < resolved_operands.size(); k++) {
-                    int val = resolved_operands[k].value;
-                    
-                    if (resolved_operands[k].type == OperandType::REGISTER) {
-                        current_shift = current_shift - reg_bits;
-                        machine_word = machine_word | (val << current_shift);
-                    } 
-                    else if (resolved_operands[k].type == OperandType::IMMEDIATE) {
-                        // assuming immediate takes whatever bits are left
-                        int imm_bits = cpu.word_size - opcode_bits - (2 * reg_bits); 
-                        current_shift = current_shift - imm_bits;
-                        machine_word = machine_word | (val << current_shift);
-                    }
-                }
-
-                // Print the Hex and the binary representation
-                std::cout << "Found '" << mnemonic << "' -> Hex: 0x" << std::hex << machine_word << std::dec << " | Binary: ";
-                for (int b = cpu.word_size - 1; b >= 0; b--) {
-                    std::cout << ((machine_word >> b) & 1);
-                    if (b % 4 == 0 && b != 0){
-                        std::cout << " ";
-                    }
-                }
-                std::cout << "\n";
-
-                machine_code.push_back(machine_word);
+        for (const auto& m_inst : model.getInstructions()) {
+            if (m_inst.name == inst.mnemonic) {
+                ir_inst = m_inst;
                 found = true;
-                break; 
+                break;
             }
         }
-        
-        if (!found) {
-            std::cout << "ERROR: Instruction '" << mnemonic << "' not found.\n";
+        if (!found) continue; // Skip if not found
+
+        // 2. Find the format for this instruction
+        InstructionFormat format;
+        for (const auto& f : model.getInstructionFormats()) {
+            if (f.name == ir_inst.format) {
+                format = f;
+                break;
+            }
         }
+
+        // 3. Pack the bits using the format's fields
+        uint64_t machine_word = 0;
+        int reg_index = 0; // Keep track of which register we are on
+        int imm_index = 0; // Keep track of which immediate we are on
+
+        for (const auto& field : format.fields) {
+            // In Ricky's code, range.start is MSB, range.end is LSB
+            int width = field.range.start - field.range.end + 1; 
+            uint64_t value = 0;
+
+            if (field.type == FieldType::OPCODE) {
+                value = ir_inst.opcode;
+            } 
+            else if (field.type == FieldType::DESTINATION_REGISTER) {
+                value = inst.operands[0].value; // Assume operand 0 is dest
+            }
+            else if (field.type == FieldType::SOURCE_REGISTER) {
+                reg_index++;
+                value = inst.operands[reg_index].value;
+            }
+            else if (field.type == FieldType::IMMEDIATE_UNSIGNED) {
+                // Find the immediate operand
+                for (const auto& op : inst.operands) {
+                    if (op.type == OperandType::IMMEDIATE) {
+                        value = op.value;
+                        break;
+                    }
+                }
+            }
+
+            // Shift it to the correct position (range.end is the LSB position)
+            machine_word |= (value << field.range.end);
+        }
+
+        std::cout << "Packed '" << inst.mnemonic << "' -> 0x" << std::hex << machine_word << std::dec << "\n";
+        machine_code.push_back(machine_word);
     }
+
     return machine_code;
 }

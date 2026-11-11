@@ -246,12 +246,12 @@ add_custom_command(
 add_executable(parser_assembler_tester
     tests/parser_assembler_testbench.cpp
     src/ADL/parser_ADL.cpp
+    src/ADL/IntermediateModelBuilder.cpp
+    src/Common/IntermediateModel.cpp
+    src/Common/SyntaxErrorListener.cpp
     src/ASM/parser_ASM.cpp
     src/ASM/assembler.cpp
     src/ASM/AssemblerVisitor.cpp
-    src/Common/SyntaxErrorListener.cpp
-    src/Common/IntermediateModel.cpp
-    src/ADL/IntermediateModelBuilder.cpp
     
     ${ADL_GENERATED_SOURCES}
     ${ADL_GENERATED_HEADERS}
