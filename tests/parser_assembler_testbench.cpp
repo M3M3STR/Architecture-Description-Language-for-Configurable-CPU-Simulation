@@ -12,9 +12,16 @@ int main()
     
     std::string sourceADL = R"(
         architecture MyCPU {
-            registers 16
-            hi
+            registers {
+                16 { r0 r1 r2 r3 r4 r5 r6 r7 }
+            }
             memory 1024
+            format RRR {
+                opcode [0:1]
+                reg_dest [2:4]
+                reg_src [5:7]
+                reg_src [8:10]
+            }
             instruction add {
                 opcode 0
                 format RRR
@@ -22,6 +29,14 @@ int main()
             instruction sub {
                 opcode 1
                 format RRI
+            }
+            instruction abc {
+                opcode 1
+                format RRR
+            }
+            instruction xyz {
+                opcode 2
+                format RRR
             }
         }
     )";
@@ -62,6 +77,7 @@ int main()
     }
     IntermediateModel cpu = adlResult.value();
     
+    cpu.printIntermediateModel();
 
     //std::expected<ASMDefinition, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
     //if (!asmResult)
