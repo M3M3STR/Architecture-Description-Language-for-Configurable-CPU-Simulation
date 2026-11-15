@@ -1,0 +1,12 @@
+architecture my_cpu {
+     registers 16
+     wordsize 32
+     memory 4096
+     instruction add {
+          opcode 0x88
+          format RR (operands depend on this)
+          behavior {
+               r[d] = r[s] + r[t]
+          }
+     }
+}

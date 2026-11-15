@@ -10,18 +10,93 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(cpu_simulator
-        src/main.cpp
+# ============================================================
+# Dependencies
+# ============================================================
+
+include(FetchContent)
+
+# ----------------------------
+# SDL3
+# ----------------------------
+
+FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.4.16
 )
 
-target_include_directories(cpu_simulator
-        PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
+FetchContent_MakeAvailable(SDL3)
+
+
+# ----------------------------
+# Dear ImGui
+# ----------------------------
+
+FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG v1.92.2b
 )
 
 message(STATUS "Source: ${PROJECT_SOURCE_DIR}")
 message(STATUS "Binary: ${PROJECT_BINARY_DIR}")
 
+FetchContent_MakeAvailable(imgui)
+
+# ----------------------------
+# ImGuiColorTextEdit
+# ----------------------------
+
+FetchContent_Declare(
+        ImGuiColorTextEdit
+        GIT_REPOSITORY https://github.com/BalazsJako/ImGuiColorTextEdit.git
+        GIT_TAG master
+)
+
+FetchContent_MakeAvailable(ImGuiColorTextEdit)
+
+add_library(ImGuiColorTextEdit STATIC
+        ${imguicolortextedit_SOURCE_DIR}/TextEditor.cpp
+)
+
+target_include_directories(ImGuiColorTextEdit PUBLIC
+        ${imguicolortextedit_SOURCE_DIR}
+)
+
+target_link_libraries(ImGuiColorTextEdit PUBLIC
+        imgui
+)
+
+# ----------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ----------------------------
+add_library(imgui STATIC
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui
+        PUBLIC
+        ${imgui_SOURCE_DIR}
+        ${imgui_SOURCE_DIR}/backends
+)
+
+target_link_libraries(imgui
+        PUBLIC
+        SDL3::SDL3
+)
+
+# ----------------------------
+# OpenGL
+# ----------------------------
+
+find_package(OpenGL REQUIRED)
 
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
@@ -153,6 +228,12 @@ message(STATUS "ADL OUTPUTS: ${ADL_GENERATED_SOURCES}")
 message(STATUS "ADL OUTPUT DIR: ${ADL_GENERATED_DIR}")
 
 
+add_custom_target(GenerateADLParser
+        DEPENDS
+        ${ADL_GENERATED_SOURCES}
+        ${ADL_GENERATED_HEADERS}
+)
+
 # --------------------------------------------------
 # Generate C++ files from the ASM grammar
 # --------------------------------------------------
@@ -204,43 +285,26 @@ add_custom_command(
     COMMENT "Generating C++ parser from ASM.g4"
     VERBATIM
 )
+# ============================================================
+# Project Modules
+# ============================================================
 
-add_custom_target(generate_parsers
-    DEPENDS
-        ${ADL_GENERATED_SOURCES}
-        ${ADL_GENERATED_HEADERS}
-        ${ASM_GENERATED_SOURCES}
-        ${ASM_GENERATED_HEADERS}
+add_subdirectory(src)
+
+# ============================================================
+# Main Application
+# ============================================================
+
+add_executable(${PROJECT_NAME}
+        src/main.cpp
 )
 
-# --------------------------------------------------
-# Application
-# --------------------------------------------------
-
-add_executable(parserassemblertester
-    tests/ParserAssemblerTestbench.cpp
-    src/ADL/ParserADL.cpp
-    src/ASM/parser_ASM.cpp
-    src/Common/SyntaxErrorListener.cpp
-    src/Common/IntermediateModel.cpp
-    src/ADL/IntermediateModelBuilder.cpp
-    
-    ${ADL_GENERATED_SOURCES}
-    ${ADL_GENERATED_HEADERS}
-    ${ASM_GENERATED_SOURCES}
-    ${ASM_GENERATED_HEADERS}
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        SimulatorUI
 )
 
-target_include_directories(parserassemblertester PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-    "${ADL_GENERATED_DIR}"
-    "${ASM_GENERATED_DIR}"
-)
+# ============================================================
+# Tests
+# ============================================================
 
-target_link_libraries(parserassemblertester PRIVATE
-    antlr4_static
-)
-
-target_compile_definitions(parserassemblertester PRIVATE
-    ANTLR4CPP_STATIC
-)
+add_subdirectory(tests)

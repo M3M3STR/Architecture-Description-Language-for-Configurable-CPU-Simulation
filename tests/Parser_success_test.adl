@@ -1,0 +1,31 @@
+
+architecture my_cpu {
+    registers 16
+    memory 4096
+
+    instruction add {
+        opcode 0x01
+        format RR
+    }
+
+    instruction subtract {
+        opcode 0x02
+        format RR
+    }
+
+    instruction load {
+        opcode 0x03
+        format RI
+    }
+
+    instruction store {
+        opcode 0x04
+        format RI
+    }
+
+    instruction jump {
+        opcode 0x05
+        format J
+    }
+}
+

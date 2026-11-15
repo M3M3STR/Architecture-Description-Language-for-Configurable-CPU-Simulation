@@ -1,0 +1,45 @@
+#ifndef ADL_STARTSCREEN_H
+#define ADL_STARTSCREEN_H
+
+#include "SDL3/SDL_dialog.h"
+#include "SDL3/SDL_keyboard.h"
+#include "UI/Screen.h"
+#include "ADL/parser_ADL.h"
+#include "TextEditor.h"
+
+
+class StartScreen final : public Screen {
+    public:
+        using Screen::Screen;
+        ScreenRequest draw() override;
+        StartScreen(ApplicationContext &context);
+    private:
+        static constexpr  SDL_DialogFileFilter filters[] = {
+            { "Architecture Description Language ", "adl" }
+        };
+
+        // TODO
+        // for the opendialog it needs a pointer to the window who called it, this is a way to get the pointer without passing it through layers to classes
+        // maybe somepoint change this to an actual pointer set from the parent
+        SDL_Window* activeWindow = SDL_GetKeyboardFocus();
+
+        static void SDLCALL callback(void *userdata, const char * const *filelist, int filter);
+
+        void headerWidget();
+
+        ScreenRequest DescriptionWidget();
+
+        void UserInteractionWidget();
+
+        void UserInteractionWidget2();
+
+        parser_ADL parser;
+        std::string adlSource = "architecture my_cpu {\n\t\n}";
+        std::string errorOutput;
+
+        TextEditor text_editor_;
+        TextEditor error_viewer_;
+
+};
+
+#endif //ADL_STARTSCREEN_H
