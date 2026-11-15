@@ -51,7 +51,7 @@ void IntermediateModel::printIntermediateModel() {
 	std::cout << "Registers:\nName\tBit Width\tNumber\n";
 
 	for (const Register& reg : this->getRegisters()) {
-			std::cout << "  " << reg.name << "\t" << reg.bit_width << "\t" << reg.number << '\n';
+			std::cout << "  " << reg.name << "\t\t" << reg.bit_width << "\t\t" << reg.number << '\n';
 	}
 
 	std::cout << "Memory Size: " << this->getMemorySize() << '\n';

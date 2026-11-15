@@ -1,6 +1,6 @@
-#include "ADL/parser_ADL.h"
+#include "ADL/ParserADL.h"
 
-std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFromString(std::string sourceString) {
+std::expected<IntermediateModel, std::vector<SyntaxError>> ParserADL::parseFromString(std::string sourceString) {
 
 	// Create a vector to hold syntax errors and a listener to populate it
 	std::vector<SyntaxError> errorsList;
@@ -32,7 +32,7 @@ std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFrom
 	return convertParseTreeToIntermediateModel(tree);
 }
 
-std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFromFilePath(std::string filePath) {
+std::expected<IntermediateModel, std::vector<SyntaxError>> ParserADL::parseFromFilePath(std::string filePath) {
 
 	// Create a vector to hold syntax errors and a listener to populate it
 	std::vector<SyntaxError> errorsList;
@@ -66,7 +66,7 @@ std::expected<IntermediateModel, std::vector<SyntaxError>> parser_ADL::parseFrom
 	return convertParseTreeToIntermediateModel(tree);
 }
 
-IntermediateModel parser_ADL::convertParseTreeToIntermediateModel(ADLParser::ArchitectureContext* tree) {
+IntermediateModel ParserADL::convertParseTreeToIntermediateModel(ADLParser::ArchitectureContext* tree) {
 
 	// Use the IntermediateModelBuilder to visit the parse tree and build the IntermediateModel
 	IntermediateModelBuilder builder;

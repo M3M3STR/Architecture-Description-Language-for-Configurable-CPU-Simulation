@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "ADL/parser_ADL.h"
+#include "ADL/ParserADL.h"
 #include "ASM/parser_ASM.h"
 
 int main()
@@ -11,13 +11,14 @@ int main()
         architecture MyCPU {
             registers {
                 16 { r0 r1 r2 r3 r4 r5 r6 r7 }
+                32 { r8 r9 r10 r11 r12 r13 r14 r15 }
             }
             memory 1024
             format RRR {
-                opcode [0:1]
-                reg_dest [2:4]
-                reg_src [5:7]
-                reg_src [8:10]
+                opcode [1:0]
+                reg_dest [4:2]
+                reg_src [7:5]
+                reg_src [10:8]
             }
             instruction add {
                 opcode 1
@@ -46,7 +47,7 @@ int main()
     )";
 
 
-    parser_ADL parserADL;
+    ParserADL parserADL;
     parser_ASM parserASM;
 
 

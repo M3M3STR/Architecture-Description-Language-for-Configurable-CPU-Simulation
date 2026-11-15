@@ -217,9 +217,9 @@ add_custom_target(generate_parsers
 # Application
 # --------------------------------------------------
 
-add_executable(parser_assembler_tester
-    tests/parser_assembler_testbench.cpp
-    src/ADL/parser_ADL.cpp
+add_executable(parserassemblertester
+    tests/ParserAssemblerTestbench.cpp
+    src/ADL/ParserADL.cpp
     src/ASM/parser_ASM.cpp
     src/Common/SyntaxErrorListener.cpp
     src/Common/IntermediateModel.cpp
@@ -231,16 +231,16 @@ add_executable(parser_assembler_tester
     ${ASM_GENERATED_HEADERS}
 )
 
-target_include_directories(parser_assembler_tester PRIVATE
+target_include_directories(parserassemblertester PRIVATE
     "${PROJECT_SOURCE_DIR}/include"
     "${ADL_GENERATED_DIR}"
     "${ASM_GENERATED_DIR}"
 )
 
-target_link_libraries(parser_assembler_tester PRIVATE
+target_link_libraries(parserassemblertester PRIVATE
     antlr4_static
 )
 
-target_compile_definitions(parser_assembler_tester PRIVATE
+target_compile_definitions(parserassemblertester PRIVATE
     ANTLR4CPP_STATIC
 )
