@@ -7,10 +7,8 @@
 #include <vector>
 
 struct ApplicationContext {
-    std::optional<std::filesystem::path> selectedFile;
-
-
-    std::vector<std::string> errors;
+    // std::optional<std::filesystem::path> selectedFile;
+    // std::vector<std::string> errors;
 
     bool processingComplete = false;
 

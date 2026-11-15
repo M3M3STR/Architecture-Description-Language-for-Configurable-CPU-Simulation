@@ -47,15 +47,11 @@ FetchContent_MakeAvailable(imgui)
 
 FetchContent_Declare(
         ImGuiColorTextEdit
-        GIT_REPOSITORY https://github.com/goossens/ImGuiColorTextEdit.git
-        GIT_TAG v1.93.0
+        GIT_REPOSITORY https://github.com/BalazsJako/ImGuiColorTextEdit.git
+        GIT_TAG master
 )
 
 FetchContent_MakeAvailable(ImGuiColorTextEdit)
-
-if(NOT imguicolortextedit_POPULATED)
-    FetchContent_Populate(ImGuiColorTextEdit)
-endif()
 
 add_library(ImGuiColorTextEdit STATIC
         ${imguicolortextedit_SOURCE_DIR}/TextEditor.cpp
@@ -69,6 +65,9 @@ target_link_libraries(ImGuiColorTextEdit PUBLIC
         imgui
 )
 
+# ----------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ----------------------------
 add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
         ${imgui_SOURCE_DIR}/imgui_draw.cpp
@@ -197,6 +196,12 @@ add_custom_command(
 
     COMMENT "Generating C++ parser from ADL.g4"
     VERBATIM
+)
+
+add_custom_target(GenerateADLParser
+        DEPENDS
+        ${ADL_GENERATED_SOURCES}
+        ${ADL_GENERATED_HEADERS}
 )
 
 # --------------------------------------------------

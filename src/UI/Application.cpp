@@ -180,6 +180,10 @@ bool Application::initialize()
     imguiOpenGLInitialized = true;
     running = true;
 
+    // TODO sWorkaround: ImGuiColorTextEdit receives keyboard commands
+    // but does not activate SDL3 text input for printable characters.
+    SDL_StartTextInput(window);
+
     return true;
 }
 
