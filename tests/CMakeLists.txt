@@ -6,11 +6,11 @@
 # one task don't affect another task.
 
 
-#add_executable(parser_assembler_tester
-#        parser_assembler_testbench.cpp
-#)
-#
+add_executable(parserassemblertester
+        ParserAssemblerTestbench.cpp
+)
+
 ## TODO add 'ASM' back after it has been implemented
-#target_link_libraries(parser_assembler_tester PRIVATE
-#        ADL
-#)
+target_link_libraries(parserassemblertester PRIVATE
+        ADL
+)

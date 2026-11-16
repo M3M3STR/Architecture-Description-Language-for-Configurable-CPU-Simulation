@@ -115,7 +115,7 @@ ScreenRequest StartScreen::DescriptionWidget() {
         ImGui::SameLine();
 
         if (ImGui::Button("Build Simulator") && !adlSource.empty()) {
-
+			std::cout << "pre parse input: " << adlSource << std::endl;
             auto result = parser.parseFromString(adlSource);
             if (result) {
                 std::cout << "parsing was successful" << std::endl;

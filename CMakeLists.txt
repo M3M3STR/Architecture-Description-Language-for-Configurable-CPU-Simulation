@@ -303,6 +303,15 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SimulatorUI
 )
 
+if(WIN32)
+    add_custom_command(TARGET CPUSimulator POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:SDL3::SDL3>
+        $<TARGET_FILE_DIR:CPUSimulator>
+        COMMENT "Copying SDL3 DLL to executable directory"
+    )
+endif()
+
 # ============================================================
 # Tests
 # ============================================================
