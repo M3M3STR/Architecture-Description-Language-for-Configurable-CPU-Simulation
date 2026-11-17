@@ -4,13 +4,15 @@
 #include "SDL3/SDL_dialog.h"
 #include "SDL3/SDL_keyboard.h"
 #include "UI/Screen.h"
-#include "ADL/parser_ADL.h"
+#include "ADL/ParserADL.h"
 #include "TextEditor.h"
+
 
 class StartScreen final : public Screen {
     public:
         using Screen::Screen;
         ScreenRequest draw() override;
+        StartScreen(ApplicationContext &context);
     private:
         static constexpr  SDL_DialogFileFilter filters[] = {
             { "Architecture Description Language ", "adl" }
@@ -25,14 +27,18 @@ class StartScreen final : public Screen {
 
         void headerWidget();
 
-        void DescriptionWidget();
+        ScreenRequest DescriptionWidget();
 
         void UserInteractionWidget();
 
-        parser_ADL parser;
+        void UserInteractionWidget2();
 
-        std::string adlSource = R"(architecture my_cpu {\n \t \n })" ;
-        std::string errorOutput = "";
+        ParserADL parser;
+        std::string adlSource = "architecture my_cpu {\n\t\n}";
+        std::string errorOutput;
+
+        TextEditor text_editor_;
+        TextEditor error_viewer_;
 
 };
 

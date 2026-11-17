@@ -17,6 +17,8 @@ add_library(ADL STATIC
         ${ADL_GENERATED_HEADERS}
 )
 
+add_dependencies(ADL GenerateADLParser)
+
 target_include_directories(ADL PUBLIC
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/include/ADL"

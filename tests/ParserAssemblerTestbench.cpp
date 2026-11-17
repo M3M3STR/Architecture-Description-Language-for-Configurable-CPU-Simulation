@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "ADL/parser_ADL.h"
+#include "ADL/ParserADL.h"
 #include "ASM/parser_ASM.h"
 
 int main()
@@ -9,14 +9,30 @@ int main()
     
     std::string sourceADL = R"(
         architecture MyCPU {
-            registers 16
-            hi
+            registers {
+                16 { r0 r1 r2 r3 r4 r5 r6 r7 }
+                32 { r8 r9 r10 r11 r12 r13 r14 r15 }
+            }
             memory 1024
+            format RRR {
+                opcode [1:0]
+                reg_dest [4:2]
+                reg_src [7:5]
+                reg_src [10:8]
+            }
             instruction add {
                 opcode 1
                 format RRR
             }
             instruction sub {
+                opcode 2
+                format RRR
+            }
+            instruction abc {
+                opcode 1
+                format RRR
+            }
+            instruction xyz {
                 opcode 2
                 format RRR
             }
@@ -31,7 +47,7 @@ int main()
     )";
 
 
-    parser_ADL parserADL;
+    ParserADL parserADL;
     parser_ASM parserASM;
 
 
@@ -52,6 +68,7 @@ int main()
     }
     IntermediateModel cpu = adlResult.value();
     
+    cpu.printIntermediateModel();
 
     //std::expected<ASMDefinition, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
     //if (!asmResult)

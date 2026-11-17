@@ -10,7 +10,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl3.h"
 
-
+#include <SDL3/SDL_opengl.h>
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -179,6 +179,10 @@ bool Application::initialize()
     imguiSDLInitialized = true;
     imguiOpenGLInitialized = true;
     running = true;
+
+    // TODO sWorkaround: ImGuiColorTextEdit receives keyboard commands
+    // but does not activate SDL3 text input for printable characters.
+    SDL_StartTextInput(window);
 
     return true;
 }

@@ -12,7 +12,7 @@
 #include "Common/SyntaxErrorListener.h"
 #include "IntermediateModelBuilder.h"
 
-class parser_ADL {
+class ParserADL {
 private:
 	IntermediateModel convertParseTreeToIntermediateModel(ADLParser::ArchitectureContext* tree);
 
