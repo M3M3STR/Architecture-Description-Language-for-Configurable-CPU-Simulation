@@ -1,8 +1,9 @@
 #include "ADL/ADLSemanticAnalyzer.h"
 
-std::expected<boolean, std::vector<std::string>> ADLSemanticAnalyzer::analyze(const IntermediateModel& model) {
+std::vector<std::string> ADLSemanticAnalyzer::analyze(const IntermediateModel& model) {
 	// if all good return true, 
 	// else return false and the list of errors
+	return {""};
 }
 
 void  ADLSemanticAnalyzer::checkRegisters() {
