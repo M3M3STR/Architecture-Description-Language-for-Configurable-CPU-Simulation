@@ -39,6 +39,9 @@ FetchContent_Declare(
         GIT_TAG v1.92.2b
 )
 
+message(STATUS "Source: ${PROJECT_SOURCE_DIR}")
+message(STATUS "Binary: ${PROJECT_BINARY_DIR}")
+
 FetchContent_MakeAvailable(imgui)
 
 # ----------------------------
@@ -139,6 +142,30 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(antlr4)
 
+# This section is a workaround for a missing include in the ANTLR C++ runtime that causes compilation errors.
+# It adds the necessary 'include' directive to the ProfilingATNSimulator.cpp file if it is not already present.
+#--------------------------------------------------
+set(ANTLR_PROFILING_FILE
+    "${antlr4_SOURCE_DIR}/runtime/Cpp/runtime/src/atn/ProfilingATNSimulator.cpp"
+)
+
+file(READ "${ANTLR_PROFILING_FILE}" ANTLR_PROFILING_CONTENT)
+
+if(NOT ANTLR_PROFILING_CONTENT MATCHES "#include <chrono>")
+    string(REPLACE
+        "#include \"atn/ProfilingATNSimulator.h\""
+        "#include \"atn/ProfilingATNSimulator.h\"\n#include <chrono>"
+        ANTLR_PROFILING_CONTENT
+        "${ANTLR_PROFILING_CONTENT}"
+    )
+
+    file(WRITE
+        "${ANTLR_PROFILING_FILE}"
+        "${ANTLR_PROFILING_CONTENT}"
+    )
+endif()
+#--------------------------------------------------
+
 if(TARGET antlr4_static)
     set_property(TARGET antlr4_static
         PROPERTY CXX_STANDARD 17)
@@ -197,6 +224,9 @@ add_custom_command(
     COMMENT "Generating C++ parser from ADL.g4"
     VERBATIM
 )
+message(STATUS "ADL OUTPUTS: ${ADL_GENERATED_SOURCES}")
+message(STATUS "ADL OUTPUT DIR: ${ADL_GENERATED_DIR}")
+
 
 add_custom_target(GenerateADLParser
         DEPENDS
@@ -272,6 +302,15 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PRIVATE
         SimulatorUI
 )
+
+if(WIN32)
+    add_custom_command(TARGET CPUSimulator POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:SDL3::SDL3>
+        $<TARGET_FILE_DIR:CPUSimulator>
+        COMMENT "Copying SDL3 DLL to executable directory"
+    )
+endif()
 
 # ============================================================
 # Tests
