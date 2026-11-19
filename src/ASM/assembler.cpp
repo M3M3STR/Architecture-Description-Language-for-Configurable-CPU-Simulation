@@ -4,6 +4,11 @@
 std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& instructions, const IntermediateModel& model) {
     std::vector<uint64_t> machine_code;
 
+    std::unordered_map<std::string, int> reg_lookup;
+    for (const auto& reg : model.getRegisters()) {
+        reg_lookup[reg.name] = reg.number;
+    }
+
     for (const auto& inst : instructions) {
         // find the instruction in model
         Instruction ir_inst;
@@ -28,26 +33,32 @@ std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& 
 
         // pack the bits using the format fields
         uint64_t machine_word = 0;
+        
         int reg_index = 0; // keep track of which register we are on
-        int imm_index = 0; // keep track of which immediate we are on
 
         for (const auto& field : format.fields) {
-            // range.start is MSB and range.end is LSB
-            int width = field.range.start - field.range.end + 1; 
+
             uint64_t value = 0;
 
             if (field.type == FieldType::OPCODE) {
                 value = ir_inst.opcode;
             } 
             else if (field.type == FieldType::DESTINATION_REGISTER) {
-                value = inst.operands[0].value; // assume operand 0 is dest
+                std::string regName = inst.operands[0].text;
+            
+                if (reg_lookup.find(regName) != reg_lookup.end()) {
+                    value = reg_lookup[regName];
+                }
             }
             else if (field.type == FieldType::SOURCE_REGISTER) {
                 reg_index++;
-                value = inst.operands[reg_index].value;
+                std::string regName = inst.operands[reg_index].text;
+                
+                if (reg_lookup.find(regName) != reg_lookup.end()) {
+                    value = reg_lookup[regName];
+                }
             }
             else if (field.type == FieldType::IMMEDIATE_UNSIGNED) {
-                // find the immediate operand
                 for (const auto& op : inst.operands) {
                     if (op.type == OperandType::IMMEDIATE) {
                         value = op.value;

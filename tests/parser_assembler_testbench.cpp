@@ -62,7 +62,7 @@ int main()
     }
 
     IntermediateModel model = adlResult.value(); 
-    model.printIntermediateModel();
+    model.printIntermediateModel(); 
 
     // parse the ASM 
     std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
