@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
-
+#include <print>
 #include "ADL/ParserADL.h"
-#include "ASM/parser_ASM.h"
+#include "ADL/ADLSemanticAnalyzer.h"
+//#include "ASM/parser_ASM.h"
 
 int main()
 {
@@ -15,26 +16,58 @@ int main()
             }
             memory 1024
             format RRR {
-                opcode [1:0]
-                reg_dest [4:2]
-                reg_src [7:5]
-                reg_src [10:8]
+                op opcode [1:0]
+                rd reg_dest [4:2]
+                rs1 reg_src [7:5]
+                rs2 reg_src [10:8]
             }
             instruction add {
                 opcode 1
                 format RRR
+                operands {
+                    rd register output
+                    rs1 register input
+                    rs2 register input
+                }
+                behavior{
+                    rd = rs1;
+                }
             }
             instruction sub {
                 opcode 2
                 format RRR
+                operands {
+                    rd register output
+                    rs1 register input
+                    rs2 register input
+                }
+                behavior{
+                    rd = rs1;
+                }
             }
             instruction abc {
-                opcode 1
+                opcode 3
                 format RRR
+                operands {
+                    rd register output
+                    rs1 register input
+                    rs2 register input
+                }
+                behavior{
+                    rd = rs1;
+                }
             }
             instruction xyz {
-                opcode 2
+                opcode 4
                 format RRR
+                operands {
+                    rd register output
+                    rs1 register input
+                    rs2 register input
+                }
+                behavior{
+                    rd = rs1;
+                }
             }
         }
     )";
@@ -48,9 +81,7 @@ int main()
 
 
     ParserADL parserADL;
-    parser_ASM parserASM;
-
-
+	
     std::expected<IntermediateModel, std::vector<SyntaxError>> adlResult = parserADL.parseFromString(sourceADL);
     if (!adlResult)
     {
@@ -67,9 +98,30 @@ int main()
         return 1;
     }
     IntermediateModel cpu = adlResult.value();
-    
     cpu.printIntermediateModel();
 
+
+    ADLSemanticAnalyzer adl_analyzer(cpu);
+    
+	std::expected<bool, std::vector<std::string>> semanticResult = adl_analyzer.analyze();
+
+	if (!semanticResult) {
+		std::cerr << "Semantic analysis failed with the following errors:\n";
+		for (const auto& error : semanticResult.error()) {
+			std::cerr << "  - " << error << '\n';
+		}
+		return 1;
+	}
+	else {
+		std::cout << "Semantic analysis passed successfully.\n";
+	}
+
+    Register test = Register();
+
+	std::cout << "Test Register Name: " << test.name << ", Bit Width: " << test.bit_width << ", Number: " << test.number << std::endl;
+
+
+    //parser_ASM parserASM;
     //std::expected<ASMDefinition, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
     //if (!asmResult)
     //{
