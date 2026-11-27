@@ -84,12 +84,6 @@ ScreenRequest StartScreen::DescriptionWidget() {
 
     if (ImGui::BeginTable("descriptionGridTable", 2, ImGuiTableFlags_Borders))
     {
-        // Optional: Set up headers (The top row)
-        //ImGui::TableSetupColumn("ID");
-        //ImGui::TableSetupColumn("Name");
-        //ImGui::TableSetupColumn("Action");
-        //ImGui::TableHeadersRow();
-
         // Row 1
         ImGui::TableNextColumn();
 
@@ -115,8 +109,9 @@ ScreenRequest StartScreen::DescriptionWidget() {
         ImGui::SameLine();
 
         if (ImGui::Button("Build Simulator") && !adlSource.empty()) {
-			std::cout << "pre parse input: " << adlSource << std::endl;
-            auto result = parser.parseFromString(adlSource);
+            // TODO this is fore debug, remove when unneeded
+			std::cout << "pre parse input: " << text_editor_.GetText() << std::endl;
+            auto result = parser.parseFromString(text_editor_.GetText());
             if (result) {
                 std::cout << "parsing was successful" << std::endl;
                 ImGui::EndTable();
