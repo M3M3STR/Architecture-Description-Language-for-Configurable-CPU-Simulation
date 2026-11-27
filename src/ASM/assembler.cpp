@@ -24,7 +24,7 @@ std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& 
 
         // find the format for this instruction
         InstructionFormat format;
-        for (const auto& f : model.instruction_formats) {
+        for (const auto& f : model.getInstructionFormats()) {
             if (f.name == ir_inst.format) {
                 format = f;
                 break;
@@ -60,7 +60,7 @@ std::vector<uint64_t> Assembler::assemble(const std::vector<ParsedInstruction>& 
             }
             else if (field.type == FieldType::IMMEDIATE_UNSIGNED) {
                 for (const auto& op : inst.operands) {
-                    if (op.type == OperandType::IMMEDIATE) {
+                    if (op.type == ParsedOperandType::IMMEDIATE) {
                         value = op.value;
                         break;
                     }

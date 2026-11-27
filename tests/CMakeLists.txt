@@ -13,4 +13,5 @@ add_executable(parserassemblertester
 ## TODO add 'ASM' back after it has been implemented
 target_link_libraries(parserassemblertester PRIVATE
         ADL
+        ASM
 )
