@@ -1,5 +1,7 @@
 grammar ADL;
 
+import Behavior;
+
 architecture     : ARCHITECTURE ID LBRACE decl_list RBRACE EOF;
 
 decl_list        : register_decl memory_decl format_list instruction_list ;
@@ -14,7 +16,7 @@ format_list      : format_decl+ ;
 
 format_decl      : FORMAT ID LBRACE field_decl+ RBRACE ;
 
-field_decl       : field_type LBRACKET bit_range RBRACKET;
+field_decl       : ID field_type LBRACK bit_range RBRACK;
 
 field_type       : OPCODE
                  | REG_DEST
@@ -26,13 +28,23 @@ bit_range        : NUM COLON NUM ;
 
 instruction_list : instruction_decl+ ;
 
-instruction_decl : INSTRUCTION ID LBRACE opcode_decl FORMAT ID RBRACE ;
+instruction_decl : INSTRUCTION ID LBRACE OPCODE NUM FORMAT ID operand_list behavior_decl RBRACE ;
 
-opcode_decl      : OPCODE opcode_value ;
+operand_list     : OPERANDS LBRACE operand_decl* RBRACE ;
 
-opcode_value     : NUM
-                 | HEX
+operand_decl     : ID operand_type access_type IMPLICIT? ;
+
+operand_type     : REGISTER
+                 | IMMEDIATE
+                 | MEMORY
                  ;
+
+access_type      : INPUT
+                 | OUTPUT
+                 | INPUT_OUTPUT
+                 ;
+
+behavior_decl    : BEHAVIOR LBRACE behavior RBRACE ;
 
 ARCHITECTURE : 'architecture' ;
 REGISTERS    : 'registers' ;
@@ -42,12 +54,20 @@ FORMAT       : 'format' ;
 MEMORY       : 'memory' ;
 LBRACE       : '{' ;
 RBRACE       : '}' ;
-LBRACKET     : '[' ;
-RBRACKET     : ']' ;
+LBRACK       : '[' ;
+RBRACK       : ']' ;
 COLON        : ':' ;
 REG_DEST     : 'reg_dest' ;
 REG_SRC      : 'reg_src' ;
 IMM_UNSIGNED : 'imm_unsigned' ;
+INPUT	     : 'input' ;
+OUTPUT	     : 'output' ;
+INPUT_OUTPUT : 'input_output' ;
+REGISTER     : 'register' ;
+IMMEDIATE    : 'immediate' ;
+BEHAVIOR     : 'behavior' ;
+IMPLICIT     : 'implicit' ;
+OPERANDS	 : 'operands' ;
 
 ID           : [a-zA-Z_] [a-zA-Z_0-9]* ;
 NUM          : [0-9]+ ;

@@ -10,15 +10,24 @@
 class ADLSemanticAnalyzer {
 
 private:
-	const IntermediateModel& model;
+	IntermediateModel& model;
+	
+	std::vector<std::string> semantic_errors;
+
 	std::unordered_set<std::string> registerNames;
+	std::unordered_set<std::string> instructionNames;
+	std::unordered_set<std::string> instructionFormatNames;
+	std::unordered_set<unsigned int> opcodes;
 
 public:
 
-	std::vector<std::string> semantic_errors;
-	std::vector<std::string> analyze(const IntermediateModel& model);
+	ADLSemanticAnalyzer(IntermediateModel& model) : model(model) {}
+
+	
+
+	std::expected<bool, std::vector<std::string>> analyze();
 	void checkRegisters();
 	void checkMemory();
-
 	void checkInstructions();
+	void checkInstructionFormats();
 };

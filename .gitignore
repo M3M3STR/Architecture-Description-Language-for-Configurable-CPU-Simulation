@@ -75,3 +75,4 @@ Desktop.ini
 docs-output/
 .idea*
 include/ADL/antlr/grammar/
+CppProperties.json

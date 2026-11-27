@@ -16,6 +16,8 @@ add_library(ASM STATIC
         ${ASM_GENERATED_HEADERS}
 )
 
+add_dependencies(ASM GenerateASMParser)
+
 target_include_directories(ASM PUBLIC
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/include/ASM"

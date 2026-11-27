@@ -4,7 +4,7 @@
 #include <vector>
 
 struct Register{
-	std::string name;
-	int bit_width;
-	int number;
+	std::string name = "";
+	int bit_width = -1;
+	int number = -1;
 };

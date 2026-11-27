@@ -16,27 +16,27 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-# ----------------------------
-# SDL3
-# ----------------------------
+# # ----------------------------
+# # SDL3
+# # ----------------------------
 
 FetchContent_Declare(
-        SDL3
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-3.4.16
+         SDL3
+         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+         GIT_TAG release-3.4.16
 )
 
-FetchContent_MakeAvailable(SDL3)
+ FetchContent_MakeAvailable(SDL3)
 
 
-# ----------------------------
-# Dear ImGui
-# ----------------------------
+# # ----------------------------
+# # Dear ImGui
+# # ----------------------------
 
 FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.92.2b
+         imgui
+         GIT_REPOSITORY https://github.com/ocornut/imgui.git
+         GIT_TAG v1.92.2b
 )
 
 message(STATUS "Source: ${PROJECT_SOURCE_DIR}")
@@ -92,9 +92,9 @@ target_link_libraries(imgui
         SDL3::SDL3
 )
 
-# ----------------------------
-# OpenGL
-# ----------------------------
+# # ----------------------------
+# # OpenGL
+# # ----------------------------
 
 find_package(OpenGL REQUIRED)
 
@@ -285,6 +285,13 @@ add_custom_command(
     COMMENT "Generating C++ parser from ASM.g4"
     VERBATIM
 )
+
+add_custom_target(GenerateASMParser
+    DEPENDS
+        ${ASM_GENERATED_SOURCES}
+        ${ASM_GENERATED_HEADERS}
+)
+
 # ============================================================
 # Project Modules
 # ============================================================
@@ -317,3 +324,4 @@ endif()
 # ============================================================
 
 add_subdirectory(tests)
+

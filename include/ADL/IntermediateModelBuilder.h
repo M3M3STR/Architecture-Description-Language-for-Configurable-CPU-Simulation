@@ -21,5 +21,8 @@ public:
 	//std::any visitField_type(ADLParser::Field_typeContext* ctx) override;
 	//std::any visitBit_range(ADLParser::Bit_rangeContext* ctx) override;
 	std::any visitInstruction_decl(ADLParser::Instruction_declContext* ctx) override;
+	std::any visitOperand_decl(ADLParser::Operand_declContext* ctx) override;
+	std::any visitOperand_type(ADLParser::Operand_typeContext* ctx) override;
+	std::any visitAccess_type(ADLParser::Access_typeContext* ctx) override;
 	void printIntermediateModel(const IntermediateModel& model);
 };

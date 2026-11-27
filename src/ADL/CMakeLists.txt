@@ -5,7 +5,6 @@
 # Tasks are added as separate sub-projects so as compilation errors in
 # one task don't affect another task.
 
-
 file(GLOB ADL_SOURCES CONFIGURE_DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )

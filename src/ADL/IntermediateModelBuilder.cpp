@@ -18,7 +18,6 @@ std::any IntermediateModelBuilder::visitDecl_list(ADLParser::Decl_listContext* c
 
 // Visit the register declaration and set the register count and groups in the IntermediateModel
 std::any IntermediateModelBuilder::visitRegister_decl(ADLParser::Register_declContext* ctx) {
-	//cpu.setRegisterCount(std::stoi(ctx->NUM()->getText()));
 
 	for (auto* group : ctx->reg_group()) {
 		visitReg_group(group);
@@ -35,9 +34,8 @@ std::any IntermediateModelBuilder::visitReg_group(ADLParser::Reg_groupContext* c
 		Register r;
 		r.name = reg->getText();
 		r.bit_width = width;
-		r.number = cpu.registers.size();
+		r.number = cpu.getRegisterCount();
 		cpu.addRegister(r);
-		cpu.register_count++;
 	}
 
 	return 0;
@@ -70,17 +68,19 @@ std::any IntermediateModelBuilder::visitFormat_decl(ADLParser::Format_declContex
 std::any IntermediateModelBuilder::visitField_decl(ADLParser::Field_declContext* ctx) {
 	Field f;
 
+	f.name = ctx->ID()->getText();
+
 	std::string type = ctx->field_type()->getText();
 
-	if (type == "OPCODE") {
+	if (type == "opcode") {
 		f.type = FieldType::OPCODE;
-	} else if (type == "REG_DEST") {
+	} else if (type == "reg_dest") {
 		f.type = FieldType::DESTINATION_REGISTER;
 	}
-	else if (type == "REG_SRC") {
+	else if (type == "reg_src") {
 		f.type = FieldType::SOURCE_REGISTER;
 	}
-	else if (type == "IMM_UNSIGNED") {
+	else if (type == "imm_unsigned") {
 		f.type = FieldType::IMMEDIATE_UNSIGNED;
 	}
 
@@ -94,9 +94,50 @@ std::any IntermediateModelBuilder::visitField_decl(ADLParser::Field_declContext*
 std::any IntermediateModelBuilder::visitInstruction_decl(ADLParser::Instruction_declContext* ctx) {
 	Instruction instr;
 	instr.name = ctx->ID(0)->getText();
-	instr.opcode = std::stoi(ctx->opcode_decl()->opcode_value()->getText());
+	instr.opcode = std::stoi(ctx->NUM()->getText());
 	instr.format = ctx->ID(1)->getText();
+
+	for (auto* op : ctx->operand_list()->operand_decl()) {
+		instr.operands.push_back(std::any_cast<Operand>(visitOperand_decl(op)));
+	}
+
 	cpu.addInstruction(instr);
 	return 0;
 }
 
+std::any IntermediateModelBuilder::visitOperand_decl(ADLParser::Operand_declContext* ctx) {
+	Operand op;
+	op.name = ctx->ID()->getText();
+	op.type = std::any_cast<OperandType>(visitOperand_type(ctx->operand_type()));
+	op.access = std::any_cast<AccessType>(visitAccess_type(ctx->access_type()));
+	if (ctx->IMPLICIT()) {
+		op.implicit = true;
+	}
+	return op;
+}
+
+std::any IntermediateModelBuilder::visitOperand_type(ADLParser::Operand_typeContext* ctx) {
+	if (ctx->REGISTER()) {
+		return OperandType::REGISTER;
+	}
+	else if (ctx->IMMEDIATE()) {
+		return OperandType::IMMEDIATE;
+	}
+	else if (ctx->MEMORY()) {
+		return OperandType::MEMORY;
+	}
+	return OperandType::NONE;
+}
+
+std::any IntermediateModelBuilder::visitAccess_type(ADLParser::Access_typeContext* ctx) {
+	if (ctx->INPUT()) {
+		return AccessType::INPUT;
+	}
+	else if (ctx->OUTPUT()) {
+		return AccessType::OUTPUT;
+	}
+	else if (ctx->INPUT_OUTPUT()) {
+		return AccessType::INPUT_OUTPUT;
+	}
+	return AccessType::NONE;
+}

@@ -19,7 +19,7 @@ std::expected<IntermediateModel, std::vector<SyntaxError>> ParserADL::parseFromS
 	// Parse the input and build the parse tree
 	auto* tree = parser.architecture();
 
-	std::cout << tree->toStringTree(&parser) << '\n';
+	//std::cout << tree->toStringTree(&parser) << '\n';
 
 	if (parser.getNumberOfSyntaxErrors() != 0)
 	{
@@ -53,7 +53,7 @@ std::expected<IntermediateModel, std::vector<SyntaxError>> ParserADL::parseFromF
 
 	auto* tree = parser.architecture();
 
-	std::cout << tree->toStringTree(&parser) << '\n';
+	//std::cout << tree->toStringTree(&parser) << '\n';
 
 	if (parser.getNumberOfSyntaxErrors() != 0)
 	{
