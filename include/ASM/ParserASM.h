@@ -6,9 +6,9 @@
 #include <expected>
 #include "ASM/AssemblerVisitor.h"
 #include "Common/SyntaxError.h" 
-#include "ASM/parser_ASM.h"
+#include "ASM/ParserASM.h"
 
-class parser_ASM {
+class ParserASM {
 public:
     std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> 
     parseFromString(std::string sourceString);

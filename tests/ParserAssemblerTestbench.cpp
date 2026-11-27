@@ -3,7 +3,8 @@
 #include <print>
 #include "ADL/ParserADL.h"
 #include "ADL/ADLSemanticAnalyzer.h"
-//#include "ASM/parser_ASM.h"
+#include "ASM/ParserASM.h"
+#include "ASM/Assembler.h"
 
 int main()
 {
@@ -118,17 +119,32 @@ int main()
 
     Register test = Register();
 
-	std::cout << "Test Register Name: " << test.name << ", Bit Width: " << test.bit_width << ", Number: " << test.number << std::endl;
+    std::cout << "Test Register Name: " << test.name << ", Bit Width: " << test.bit_width << ", Number: " << test.number << "\n" << std::endl;;
 
 
-    //parser_ASM parserASM;
-    //std::expected<ASMDefinition, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
-    //if (!asmResult)
-    //{
-    //    std::cerr << "Failed to parse ASM: " << asmResult.error() << '\n';
-    //    return 1;
-    //}
-    //ASMDefinition asmDef = asmResult.value();
+	ParserASM parserASM;
+
+    // parse the ASM 
+    std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> asmResult = parserASM.parseFromString(sourceASM);
+    if (!asmResult)
+    {
+        std::cerr << "Failed to parse ASM: " << std::endl;
+
+        for (const auto& error : asmResult.error())
+        {
+            std::cerr << "Line " << error.line
+                << ", Column " << error.column
+                << ": " << error.msg << '\n';
+        }
+
+        return 1;
+    }
+    std::vector<ParsedInstruction> asmInstructions = asmResult.value();
+
+    // run the assembler
+    std::cout << "\nassembler test:\n";
+    std::vector<uint64_t> machine_code = Assembler::assemble(asmInstructions, cpu);
+    std::cout << "Machine Code size: " << machine_code.size() << "\n";
 
     return 0;
 }

@@ -1,10 +1,10 @@
-#include "ASM/parser_ASM.h"  
+#include "ASM/ParserASM.h"  
 #include "ASMLexer.h"
 #include "ASMParser.h"
 #include "Common/SyntaxErrorListener.h"
 
 std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> 
-parser_ASM::parseFromString(std::string sourceString) {
+ParserASM::parseFromString(std::string sourceString) {
     std::vector<SyntaxError> errorsList;
     SyntaxErrorListener errorListener(errorsList);
 
@@ -30,7 +30,7 @@ parser_ASM::parseFromString(std::string sourceString) {
     return visitor.instructions; // return the data
 }
 
-std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> parser_ASM::parseFromFilePath(std::string filePath) {
+std::expected<std::vector<ParsedInstruction>, std::vector<SyntaxError>> ParserASM::parseFromFilePath(std::string filePath) {
     // add the error listener setup
     std::vector<SyntaxError> errorsList;
     SyntaxErrorListener errorListener(errorsList);
