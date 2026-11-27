@@ -8,9 +8,10 @@ enum class OperandType { // holds whether the operand is a register or number
     IMMEDIATE
 };
 
-struct Operand { // hold both the type and the value
+struct Operand { // hold the type, value, and str
     OperandType type;
     int value;
+    std::string text;
 };
 
 struct ParsedInstruction {  // hold both the mnemonic and operands
@@ -21,5 +22,9 @@ struct ParsedInstruction {  // hold both the mnemonic and operands
 class AssemblerVisitor : public ASMBaseVisitor { // walks the tree and grabs the data
 public:
     std::vector<ParsedInstruction> instructions; // store every instruction it finds
-    std::any visitInstruction(ASMParser::InstructionContext* ctx) override; // runs every time it finds an instruction in the tree
+    
+    // override the functions to build the data 
+    std::any visitInstruction(ASMParser::InstructionContext* ctx) override;
+    std::any visitOperand_list(ASMParser::Operand_listContext* ctx) override;
+    std::any visitOperand(ASMParser::OperandContext* ctx) override;
 };

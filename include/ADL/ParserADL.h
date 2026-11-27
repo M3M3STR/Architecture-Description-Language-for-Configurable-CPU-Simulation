@@ -7,7 +7,7 @@
 
 #include "antlr4-runtime.h"
 #include "ADLLexer.h"
-#include "ADLParser.h"
+#include "ADL/parser_ADL.h"
 #include "Common/IntermediateModel.h"
 #include "Common/SyntaxErrorListener.h"
 #include "IntermediateModelBuilder.h"

@@ -16,28 +16,28 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-# ----------------------------
-# SDL3
-# ----------------------------
+# # ----------------------------
+# # SDL3
+# # ----------------------------
 
-FetchContent_Declare(
-        SDL3
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-3.4.16
-)
+# FetchContent_Declare(
+#         SDL3
+#         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+#         GIT_TAG release-3.4.16
+# )
 
-FetchContent_MakeAvailable(SDL3)
+# FetchContent_MakeAvailable(SDL3)
 
 
-# ----------------------------
-# Dear ImGui
-# ----------------------------
+# # ----------------------------
+# # Dear ImGui
+# # ----------------------------
 
-FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.92.2b
-)
+# FetchContent_Declare(
+#         imgui
+#         GIT_REPOSITORY https://github.com/ocornut/imgui.git
+#         GIT_TAG v1.92.2b
+# )
 
 message(STATUS "Source: ${PROJECT_SOURCE_DIR}")
 message(STATUS "Binary: ${PROJECT_BINARY_DIR}")
@@ -77,26 +77,26 @@ add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui_tables.cpp
         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
 
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-)
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+# )
 
-target_include_directories(imgui
-        PUBLIC
-        ${imgui_SOURCE_DIR}
-        ${imgui_SOURCE_DIR}/backends
-)
+# target_include_directories(imgui
+#         PUBLIC
+#         ${imgui_SOURCE_DIR}
+#         ${imgui_SOURCE_DIR}/backends
+# )
 
-target_link_libraries(imgui
-        PUBLIC
-        SDL3::SDL3
-)
+# target_link_libraries(imgui
+#         PUBLIC
+#         SDL3::SDL3
+# )
 
-# ----------------------------
-# OpenGL
-# ----------------------------
+# # ----------------------------
+# # OpenGL
+# # ----------------------------
 
-find_package(OpenGL REQUIRED)
+# find_package(OpenGL REQUIRED)
 
 # --------------------------------------------------
 # Java: required for the ANTLR grammar generator
